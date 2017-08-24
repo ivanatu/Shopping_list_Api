@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-import datetime
+from datetime import datetime
 
 db = SQLAlchemy()
 
@@ -26,6 +26,20 @@ class BaseModel(db.Model):
             for column, value in self._to_dict().items()
         }
 
+class Todo(db.Model):
+    __tablename__ = 'todos'
+    id = db.Column('todo_id', db.Integer, primary_key=True)
+    title = db.Column(db.String(60))
+    text = db.Column(db.String)
+    done = db.Column(db.Boolean)
+    pub_date = db.Column(db.DateTime)
+ 
+    def __init__(self, title, text):
+        self.title = title
+        self.text = text
+        self.done = False
+        self.pub_date = datetime.utcnow()
+
 class User(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
@@ -43,11 +57,13 @@ class Item(db.Model):
     __tablename__ = 'items'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True)
-    price = db.Column(db.String(120), unique=True)
+    price = db.Column(db.String(120))
+    List_id = db.Column(db.Integer)
 
-    def __init__(self, name, price):
+    def __init__(self, name, price, List_id):
         self.name = name
         self.price = price
+        self.List_id = List_id
 
     def __repr__(self):
         return '<Item %r>' % self.name
@@ -61,5 +77,5 @@ class Shopping_list(db.Model):
         self.list = list
 
     def __repr__(self):
-        return '<List %r>' % self.list
+        return '<Shopping_list %r>' % self.list
 
