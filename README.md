@@ -1,4 +1,4 @@
-[![Coverage Status](https://coveralls.io/repos/github/ivanatu/Shopping_list_Api/badge.svg?branch=master)](https://coveralls.io/github/ivanatu/Shopping_list_Api?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/ivanatu/Shopping_list_Api/badge.png?branch=master)](https://coveralls.io/github/ivanatu/Shopping_list_Api?branch=master)
 
 
 
