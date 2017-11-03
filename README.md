@@ -3,7 +3,7 @@
 
 [![Maintainability](https://api.codeclimate.com/v1/badges/cc4de24321a651891f87/maintainability)](https://codeclimate.com/github/ivanatu/Shopping_list_Api/maintainability)
 
-
+[![Test Coverage](https://api.codeclimate.com/v1/badges/cc4de24321a651891f87/test_coverage)](https://codeclimate.com/github/ivanatu/Shopping_list_Api/test_coverage)
 
 # Shopping_list_Api
 
