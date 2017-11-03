@@ -1,14 +1,5 @@
 [![Coverage Status](https://coveralls.io/repos/github/ivanatu/Shopping_list_Api/badge.svg?branch=master)](https://coveralls.io/github/ivanatu/Shopping_list_Api?branch=master)
 
-https://coveralls.io/repos/github/ivanatu/Shopping_list_Api/badge.svg?branch=master(Coverage Status)!:https://coveralls.io/github/ivanatu/Shopping_list_Api?branch=master
-
-{<img src="https://coveralls.io/repos/github/ivanatu/Shopping_list_Api/badge.svg?branch=master" alt="Coverage Status" />}[https://coveralls.io/github/ivanatu/Shopping_list_Api?branch=master]
-
-
-<a href='https://coveralls.io/github/ivanatu/Shopping_list_Api?branch=master'><img src='https://coveralls.io/repos/github/ivanatu/Shopping_list_Api/badge.svg?branch=master' alt='Coverage Status' /></a>
-
-.. image:: https://coveralls.io/repos/github/ivanatu/Shopping_list_Api/badge.svg?branch=master
-:target: https://coveralls.io/github/ivanatu/Shopping_list_Api?
 
 
 # Shopping_list_Api
