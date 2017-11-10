@@ -6,38 +6,13 @@ from datetime import datetime, timedelta
 import jwt
 
 db = SQLAlchemy()
-
-class BaseModel(db.Model):
-    """Base data model for all objects"""
-    __abstract__ = True
-
-    def __init__(self, *args):
-        super().__init__(*args)
-
-    def __repr__(self):
-        """Define a base way to print models"""
-        return '%s(%s)' % (self.__class__.__name__, {
-            column: value
-            for column, value in self._to_dict().items()
-        })
-
-    def json(self):
-        """
-                Define a base way to jsonify models, dealing with datetime objects
-        """
-        return {
-            column: value if not isinstance(value, datetime.date) else value.strftime('%Y-%m-%d')
-            for column, value in self._to_dict().items()
-        }
-
-
 class User(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(80))
     last_name = db.Column(db.String(80))
     username = db.Column(db.String(80), unique=True)
-    password = db.Column(db.String(80), unique=True)
+    password = db.Column(db.String(500), unique=True)
 
     def __init__(self, first_name, last_name, username, password):
         self.first_name = first_name
@@ -45,28 +20,28 @@ class User(db.Model):
         self.username = username
         self.password = password
 
-    def generate_token(self, user_id):
-        """Generate token for authentication and return string"""
-        from app import app
+    def generate_auth_token(self, expiration=100):
+        from views import app
         try:
-            # set up payload with expiration date
             payload = {
-                'exp': datetime.utcnow() + timedelta(minutes=60),
+                'exp': datetime.utcnow() + timedelta(minutes=expiration),
                 'iat': datetime.utcnow(),
-                'sub': user_id
+                'sub': self.id
             }
-            return jwt.encode(
+            # create the byte string token using the payload and the SECRET key
+            jwt_string = jwt.encode(
                 payload,
                 app.config.get('SECRET_KEY'),
                 algorithm='HS256'
             )
-        except Exception as e:
-            return str(e)
+            return jwt_string
+        except Exception as ex:
+            return str(ex)
 
     @staticmethod
     def decode_token(token):
         """Decodes token from the authorization header"""
-        from app import app
+        from views import app
         try:
             # try to decode the token using the secret variable
             payload = jwt.decode(token, app.config.get('SECRET_KEY'))
