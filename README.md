@@ -27,7 +27,7 @@ You can create, view, update, and delete a shopping list in your user account
 You can create, view, update, and delete an item in your shopping list under your account
 API Documentation
 
-Documentation for this API can be found at http://127.0.0.1:5000, when you run the application locally or you can navigate to the heroku deployment and view the documentation
+Documentation for this API can be found at http://127.0.0.1:5001, when you run the application locally or you can navigate to the heroku deployment and view the documentation
 
 Tools
 
@@ -42,10 +42,8 @@ Requirements
 Python 2.7.1x+. preferably use Python 3.x.x+
 Tests
 
-Even God commands us to run tests: 1 Thessalonians 5:21; "Test all things." So to run tests, go to your command line prompt and execute the following command
-
-   $ cd shopping_list_app/
-   $ nosetest --with-coverage test_shoplist.py
+   $ cd app
+   $ nosetest --with-coverage test_app.py
 Running the application
 
 To run this application on a linux box, execute the following command.
@@ -60,28 +58,29 @@ To run this application on a linux box, execute the following command.
     $ nohup python run.py runserver > logs/shop.log 2>&1>> logs/shop.log & disown
 Base URL for the API
 
-The base url for this api is https://api-shopping-list.herokuapp.com/ in case you want to try out this API endpoints using curl or postman from your computer with out cloning this repository. For example, on linux commandline issue this curl command to login (you will need to first register to login, please see documentation).
+The base url for this api is https://app.swaggerhub.com/apis/ivanatu/shopping_list_API/1.0.0#/ in case you want to try out this API endpoints using curl or postman from your computer with out cloning this repository. For example, on linux commandline issue this curl command to login (you will need to first register to login, please see documentation).
 
-curl -H "Content-Type: application/json" -X POST -d '{"username":"foo@bar.com","password":"foobar"}' https://api-shopping-list.herokuapp.com/auth/login
-Endpoints to create a user account and login into the application
+#### Endpoints to create a user account and login into the application
+HTTP Method|End point | Public Access|Action
+-----------|----------|--------------|------
+POST | /auth/register | True | Create an account
+POST | /auth/login | True | Login a user
+POST | /auth/logout | False | Logout a user
+POST | /auth/reset-password | False | Reset a user password
 
-HTTP Method	End point	Public Access	Action
-POST	/auth/register	True	Create an account
-POST	/auth/login	True	Login a user
-POST	/auth/logout	False	Logout a user
-POST	/auth/reset-password	False	Reset a user password
 
-Endpoints to create, update, view and delete a shopping list
+#### Endpoints to create, update, view and delete a shopping list
+HTTP Method|End point | Public Access|Action
+-----------|----------|--------------|------
+POST | /shoppinglists | False | Create a shopping list
+GET | /shoppinglists | False | View all shopping lists
+GET | /shoppinglists/id | False | View details of a shopping list
+PUT | /shoppinglists/id | False | Updates a shopping list with a given id
+DELETE | /shoppinglists/id | False | Deletes a shopping list with a given id
+#### Endpoints to create, update, view and delete a shopping list item
+HTTP Method|End point | Public Access|Action
+-----------|----------|--------------|------
 
-HTTP Method	End point	Public Access	Action
-POST	/shoppinglists	False	Create a shopping list
-GET	/shoppinglists	False	View all shopping lists
-GET	/shoppinglists/id	False	View details of a shopping list
-PUT	/shoppinglists/id	False	Updates a shopping list with a given id
-DELETE	/shoppinglists/id	False	Deletes a shopping list with a given id
-Endpoints to create, update, view and delete a shopping list item
-
-HTTP Method	End point	Public Access	Action
-POST	/shoppinglists/id/items	False	Add an Item to a shopping list
-PUT	/shoppinglists/id/items/<item_id>	False	Update a shopping list item on a given list
-DELETE	/shoppinglists/id/items/<item_id>	False	Delete a shopping list item from a given list
+POST | /shoppinglists/id/items | False | Add an Item to a shopping list
+PUT | /shoppinglists/id/items/<item_id> | False | Update a shopping list item on a given list
+DELETE | /shoppinglists/id/items/<item_id> | False | Delete a shopping list item from a given list
