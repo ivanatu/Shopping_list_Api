@@ -1,0 +1,440 @@
+swagger: "2.0"
+info:
+  description: "This is a sample server Shopping LIst server."
+  version: "1.0.0"
+  title: " Shopping List Endpoints"
+  termsOfService: "http://swagger.io/terms/"
+  contact:
+    email: "apiteam@swagger.io"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+# host: "shoppinglist.swagger.io"
+# basePath: "/v2"
+tags:
+- name: "user"
+  description: "Operations about user"
+- name: "Shopping_List"
+  description: "Everything about your ShoppingLists"
+- name: "Item"
+  description: "Everything about the Shopping List items"
+# schemes:
+# - "http"
+paths:
+  /auth/register:
+    post:
+      tags:
+      - user
+      summary: Create new user
+      description: Registers a user to the system.
+      produces:
+      - application/json
+      - application/xml
+      parameters:
+      - in: body
+        name: body
+        description: Created new user with his attributes
+        required: true
+        schema:
+          $ref: '#/definitions/User'
+      responses:
+        201:
+          description: user account created successfully
+        200:
+          description: user already exists
+        400:
+          description: bad or missing parameters in request
+  /auth/login:
+    post:
+      tags:
+      - user
+      summary: Logs user into the system
+      operationId: loginUser
+      produces:
+      - application/json
+      - application/xml
+      parameters:
+      - in: body
+        name: body
+        description: The username and password for login are required
+        schema:
+          $ref: '#/definitions/login'
+      responses:
+        200:
+          description: successful operation
+        400:
+          description: wrong password or username or may be user does\'t exist
+  /auth/logout:
+    post:
+      tags:
+      - user
+      summary: Logs out current logged in user session
+      operationId: logoutUser
+      produces:
+      - application/json
+      - application/xml
+      parameters: []
+      responses:
+        200:
+          description: logout was successful
+  /auth/reset-password:
+    post:
+      tags:
+      - user
+      summary: resets the password of a logged in user
+      operationId: reset_password
+      produces:
+      - application/json
+      - application/xml
+      parameters:
+      - in: body
+        name: body
+        description: both old password and new password are required in the body
+        required: true
+        schema:
+          type: array
+          items:
+            $ref: '#/definitions/reset'
+      responses:
+        200:
+          description: password was changed successfully
+        201:
+          description: wrong username or password or may be user    does\'t exist
+        401:
+          description: bad or missing parameters in request
+      security:
+      - shopping_list_auth:
+        - "write:shopping_list"
+        - "read:shopping_list"
+  /shoppinglists:
+    post:
+      tags:
+      - "Shopping_List"
+      summary: "Adding a shopping list"
+      description: ""
+      operationId: "addshoppinglist"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "list name"
+        description: "order placed for adding a shopping list"
+        required: true
+        schema:
+          $ref: '#/definitions/Shopping_List'
+      responses:
+        201:
+          description: "List Created Successfully"
+        400:
+          description: "list is missing in the data"
+        401:
+          description: "cant access login"
+      security:
+      - shopping_list_auth:
+        - "write:shopping_list"
+        - "read:shopping_list"
+    get:
+      tags:
+      - "Shopping_List"
+      summary: "Find purchase order by ID"
+      description: ""
+      operationId: "getshoppinglists"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: body
+        name: body
+        description: "ID of shopping list that needs to be fetched"
+        required: true
+        schema:
+            $ref: "#/definitions/Shopping_List"
+      responses:
+        200:
+          description: "List found"
+        404:
+          description: "list not found"
+        401:
+          description: "Please register or login"
+      security:
+      - shopping_list_auth:
+        - "write:shopping_list"
+        - "read:shopping_list"
+  /shoppinglists/<id>:
+    get:
+      tags:
+      - "Shopping_List"
+      summary: "Find shopping list by ID"
+      description: ""
+      operationId: "getshoppinglistsById"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: header
+        name: body
+        description: "ID of shopping list that needs to be fetched"
+        type: "string"
+      responses:
+        200:
+          description: "List found"
+        404:
+          description: "list not found"
+        401:
+          description: "Please register or login"
+      security:
+      - shopping_list_auth:
+        - "write:shopping_list"
+        - "read:shopping_list"  
+    put:
+      tags:
+      - "Shopping_List"
+      summary: "update list"
+      description: ""
+      operationId: "updateshoppinglistsById"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: header
+        description: "ID of shoppinglist that needs to be fetched"
+        type: "string"
+      responses:
+        201:
+          description: "list updated"
+        400:
+          description: "list not updated"
+        401:
+          description: "cant access to login"
+      security:
+      - shopping_list_auth:
+        - "write:shopping_list"
+        - "read:shopping_list"
+    
+    delete:
+      tags:
+      - "Shopping_List"
+      summary: "delete specific list"
+      description: ""
+      operationId: "deleteshoppinglist"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: header
+        description: "ID of list that needs to be fetched"
+        required: true
+        type: string
+      responses:
+        200:
+          description: "list deleted"
+        401:
+          description: "cant access to login"
+        404:
+          description: "Order not found"
+      security:
+      - shopping_list_auth:
+        - "write:shopping_list"
+        - "read:shopping_list"
+  /shoppinglists/<id>/items/:
+    post:
+      tags:
+      - "Item"
+      summary: "Add items to a specific list"
+      description: ""
+      operationId: "addPet"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "items added to a specific list"
+        required: true
+        schema:
+          $ref: "#/definitions/Item"
+      responses:
+        201:
+          description: "Item added successfully"
+        404:
+          description: "List doesnot exist"
+        401:
+          description: "Please login"
+      security:
+      - shopping_list_auth:
+        - "write:shopping_list"
+        - "read:shopping_list"
+  /shoppinglists/<id>/items/<item_id>:
+    put:
+      tags:
+      - "Item"
+      summary: "Update an item in a specific list"
+      description: ""
+      operationId: "updateitem"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "itemID"
+        in: "query"
+        description: "we are updating an item on the list"
+        required: true
+        type: "array"
+        items:
+          type: "string"
+          enum:
+          - "available"
+          - "pending"
+          - "sold"
+          default: "available"
+        collectionFormat: "multi"
+      responses:
+        201:
+          description: "Item updated successfully"
+        400:
+          description: "Failed to update item"
+        404:
+          description: "List doesnot exist"
+        401:
+          description: "Login required"
+      security:
+      - shopping_list_auth:
+        - "write:shopping_list"
+        - "read:shopping_list"
+    delete:
+      tags:
+      - "Item"
+      summary: "Deletes an item"
+      description: ""
+      operationId: "deletePet"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "itemId"
+        in: "query"
+        description: "item id to delete"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "Item deleted successfully"
+        400:
+          description: "item not found"
+        404:
+          description: "List doesnot exist"
+        401:
+          description: "Login required"
+      security:
+      - shopping_list_auth:
+        - "write:shopping_list"
+        - "read:shopping_list"
+securityDefinitions:
+  shopping_list_auth:
+    type: oauth2
+    authorizationUrl: http://petstore.swagger.io/oauth/dialog
+    flow: implicit
+    scopes:
+      write:shopping_list: modify lists in your account
+      read:shopping_list: read your lists
+  api_key:
+    type: apiKey
+    name: api_key
+    in: header
+definitions:
+  User:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      first_Name:
+        type: string
+        example: Aturinda
+      last_Name:
+        type: string
+        example: Ivan
+      username:
+        type: string
+        example: ivo
+      password:
+        type: string
+        example: president
+    xml:
+      name: User
+  Item:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      name:
+        type: string
+        example: books
+      price:
+        type: integer
+        format: int64
+        example: 5000
+    
+      
+    xml:
+      name: Item
+  Shopping_List:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      list:
+        type: string
+        example: groceries
+    xml:
+      name: Shopping_list
+  reset:
+    type: object
+    properties:
+      username:
+        type: string
+        example: ivo
+      old_password:
+        type: string
+        example: president
+      new_password:
+        type: string
+        example: ministers
+    xml:
+      name: reset
+  login:
+    type: object
+    properties:
+      username:
+        type: string
+        example: ivo
+      password:
+        type: string
+        example: president
+    xml:
+      name: login
+      
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+# Added by API Auto Mocking Plugin
+#host: virtserver.swaggerhub.com
+#basePath: /ivanatu/shopping_list_API/1.0.0
+#schemes:
+# - https
+# - http
+# Added by API Auto Mocking Plugin
+host: virtserver.swaggerhub.com
+basePath: /ivanatu/shopping_list_API/1.0.0
+schemes:
+ - https
+ - http
