@@ -1,60 +1,515 @@
 import unittest
-from app import app, models
+from flask_testing import TestCase
 from app.models import db
-#from flask_testing import TestCase
+from app import app, models
 import json
+from flask import Flask
 from werkzeug.security import generate_password_hash
 
-class TestShoppingListAPI(unittest.TestCase):
-	def setUp(self):
-		self.user = {"first_name":"aturinda", "last_name":"ivan", "username":"ivan", "password":"1234"}
-		db.create_all()
-		db.session.commit()
 
-	def tearDown(self):
-	 	db.session.remove()
-	 	db.drop_all()
+class TestShoppingListAPI(TestCase):
+    """Tests for the Shopping List API endpoints """
+    test_first_name = "aturinda"
+    test_last_name = "ivan"
+    test_username = "ivo"
+    test_password = "ivo"
+    test_list = "clothes"
+    test_name = "item"
+    test_price = "5000"
 
-	def add_user(self):
-	 	"""This is a test user to use during the running of tests"""
-	 	user = models.User(username=self.test_user,
-	 					   password=generate_password_hash(self.test_user_password))
-	 	db.session.add(user)
-	 	db.session.commit()
+    def create_app(self):
+        return app
 
-	def add_list(self):
-		"""This is a list user to use during the running of tests"""
-		the_list = models.Shopping_list(user_id=1,
-							   list=self.test_list)
-		db.session.add(the_list)
-		db.session.commit()
+    def add_user(self):
+        """This is a test user to use during the running of tests"""
+        user = models.User(first_name = self.test_first_name,
+                           last_name=self.test_last_name,
+                           username=self.test_username,
+                           password=generate_password_hash(self.test_password))
+        db.session.add(user)
+        db.session.commit()
 
-	def add_item(self):
-		"""This is a test list item to use during the running of tests"""
-		item = models.Item(name=self.test_item,
-						   List_id=1,
-						   price=self.test_item_price)
-		db.session.add(item)
-		db.session.commit()
+    def add_list(self):
+        """This is a list user to use during the running of tests"""
+        the_list = models.Shopping_list(list=self.test_list, user_id=1)
+        db.session.add(the_list)
+        db.session.commit()
 
-	# --------------------------- /auth/register endpoint tests --------------------------------------------------------
-	def test_register_account(self):
-		with self.client:
-			response = self.client().post('/auth/register',
-										content_type='application/json',
-										data=json.dumps(dict(self.user)))
-			reply = json.loads(response.data.decode())
-			self.assertEqual(reply['first_name'], "aturinda", msg="first_name key fail")
-			self.assertEqual(reply['last_name'], "ivan", msg="last_name key fail")
-			self.assertEqual(reply['username'], "ivan", msg="username key fail")
-			self.assertEqual(reply['message'], "user created successfully", msg="message key fail")
+    def add_item(self):
+        """This is a test list item to use during the running of tests"""
+        item = models.Item(name=self.test_name,
+                           price=self.test_price)
+        db.session.add(item)
+        db.session.commit()
 
-	def test_register_an_existing_account(self):
-		self.add_user()  # add this test user because tearDown drops all table data
-		with self.client:
-			response = self.client().post('/auth/register',
-										content_type='application/json',
-										data=json.dumps(dict(self.user)))
-			reply = json.loads(response.data.decode())
-			self.assertEqual(reply['status'], "fail", msg="status key fail")
-			self.assertEqual(reply['message'], "user already exists", msg="message key fail")
+    def setUp(self):
+        db.create_all()
+        db.session.commit()
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+
+    # --------------------------- /auth/register endpoint tests --------------------------------------------------------
+    def test_01_register_account(self):
+        with self.client:
+            response = self.client.post(
+                'auth/register',
+                content_type='application/json',
+                data=json.dumps(
+                    dict(
+                        first_name = "baron",
+                        last_name="ivan",
+                        username = "ivo",
+                        password = "ivo")
+                )
+            )
+
+        reply = json.loads(response.data.decode())
+        self.assertEqual(reply['username'], "ivo", msg="username key fail")
+        self.assertEqual(reply['status'], "pass", msg="status key fail")
+        self.assertEqual(reply['message'], "user account created successfully", msg="message key fail")
+
+    def test_02_register_an_existing_account(self):
+        self.add_user()  # add this test user because tearDown drops all table data
+        with self.client:
+            response = self.client.post(
+                'auth/register',
+                content_type='application/json',
+                data=json.dumps(
+                    dict(
+                        first_name="baron",
+                        last_name="ivan",
+                        username="ivo",
+                        password="ivo")
+                )
+            )
+            reply = json.loads(response.data.decode())
+            self.assertEqual(reply['status'], "fail", msg="status key fail")
+            self.assertEqual(reply['message'], "user already exists", msg="message key fail")
+
+# --------------------------- /auth/login endpoint tests --------------------------------------------------------
+
+    def test_03_login_with_wrong_credentials(self):
+        self.add_user()  # add this test user because tearDown drops all table data
+        with self.client:
+            response = self.client.post('/auth/login',
+                                        content_type='application/json',
+                                        data=json.dumps(dict(username="ivo", password="igwe")))
+            reply = json.loads(response.data.decode())
+            self.assertEqual(reply['status'], "fail", msg="status key fail")
+            self.assertEqual(reply['message'], "wrong password or username or may be user does't exist", msg="message key fail")
+
+    def test_04_login_with_credit_credentials(self):
+        self.add_user()  # add this test user because tearDown drops all table data
+        with self.client:
+            response = self.client.post('/auth/login',
+                                        content_type='application/json',
+                                        data=json.dumps(dict(username = "ivo", password = "ivo")))
+            reply = json.loads(response.data.decode())
+            self.assertEqual(reply['status'], "pass", msg="status key fail")
+            self.assertEqual(reply['message'], "login was successful", msg="message key fail")
+
+# --------------------------- /auth/reset-password endpoint tests --------------------------------------------------------
+
+# --------------------------- /auth/logout endpoint tests --------------------------------------------------------
+        # @unittest.skip("skipping logout test")
+
+    def test_05_logout(self):
+        with self.client:
+            # you have to be logged in to log out
+            self.client.post('/auth/login',
+                             content_type='application/json',
+                             data=json.dumps(dict(username="ivo", password="ivo")))
+
+            response = self.client.get('/auth/logout', content_type='application/json')
+            reply = json.loads(response.data.decode())
+
+            self.assertEqual(reply['status'], "pass", msg="status key fail")
+            self.assertEqual(reply['message'], "logout was successful", msg="message key fail")
+
+    def test_06_reset_password_with_wrong_credentials(self):
+        self.add_user()
+        with self.client:
+            response = self.client.post('/auth/login',
+                                content_type='application/json',
+                                data=json.dumps(dict(username="ivo", password="ivo")))
+
+            reply = json.loads(response.data.decode())
+            headers = {'Authorization': format(reply['token'])}
+
+            response = self.client.post('/auth/reset-password',
+                                        content_type='application/json',
+                                        headers=headers,
+                                        data=json.dumps(dict(username="ivo",
+                                                             old_password="igwe",
+                                                             new_password="this")))
+            reply = json.loads(response.data.decode())
+            self.assertEqual(reply['status'], "fail", msg="status key fail")
+            self.assertEqual(reply['message'], "wrong username or password or may be user does\'t exist", msg="message key fail")
+
+    def test_07_reset_password_with_correct_credentials(self):
+        self.add_user()
+        with self.client:
+            response = self.client.post('/auth/login',
+                                content_type='application/json',
+                                data=json.dumps(dict(username="ivo", password="ivo")))
+
+            reply = json.loads(response.data.decode())
+            headers = {'Authorization': format(reply['token'])}
+
+            response = self.client.post('/auth/reset-password',
+                                        content_type='application/json',
+                                        headers=headers,
+                                        data=json.dumps(dict(username="ivo",
+                                                             old_password="ivo",
+                                                             new_password="this")))
+            reply = json.loads(response.data.decode())
+            self.assertEqual(reply['status'], "pass", msg="status key fail")
+            self.assertEqual(reply['message'], "password was changed successfully", msg="message key fail")
+
+ # --------------------------- /shoppinglists endpoint tests -------------------------------------------
+
+    def test_08_create_list(self):
+        self.add_user()  # add this test user because tearDown drops all table data
+        with self.client:
+            # you have to be logged in to create a list
+            response = self.client.post('/auth/login',
+                                        content_type='application/json',
+                                        data=json.dumps(dict(username="ivo", password="ivo")))
+
+            reply = json.loads(response.data.decode())
+            headers = {'Authorization': format(reply['token'])}
+
+            response = self.client.post('/shoppinglists',
+                                        content_type='application/json',
+                                        headers=headers,
+                                        data=json.dumps(dict(list="groceries")))
+            reply = json.loads(response.data.decode())
+            self.assertTrue(reply['id'], msg="id key fail")
+            self.assertEqual(reply['list'], "groceries", msg="list key fail")
+            self.assertEqual(reply['status'], "pass", msg="status key fail")
+            self.assertEqual(reply['message'], "list created successfully", msg="message key fail")
+
+    def test_09_list_not_created(self):
+        self.add_user()  # add this test user because tearDown drops all table data
+        with self.client:
+            # you have to be logged in to create a list
+            response = self.client.post('/auth/login',
+                                        content_type='application/json',
+                                        data=json.dumps(dict(username="ivo", password="ivo")))
+
+            reply = json.loads(response.data.decode())
+            headers = {'Authorization': format(reply['token'])}
+
+            response = self.client.post('/shoppinglists',
+                                        content_type='application/json',
+                                        headers=headers,
+                                        data=json.dumps(dict()))
+            reply = json.loads(response.data.decode())
+            self.assertEqual(reply['status'], "fail", msg="status key fail")
+            self.assertEqual(reply['message'], "list is missing in the data", msg="message key fail")
+
+    def test_10_view_lists(self):
+        self.add_user()  # add this test user because tearDown drops all table data
+        self.add_list()
+        with self.client:
+            # you have to be logged in to view a list
+            response = self.client.post('/auth/login', content_type='application/json',
+                                        data=json.dumps(dict(username="ivo", password="ivo")))
+
+            reply = json.loads(response.data.decode())
+            headers = {'Authorization': format(reply['token'])}
+
+            response = self.client.get('/shoppinglists', content_type='application/json', headers=headers)
+
+            reply = json.loads(response.data.decode())
+            self.assertEqual(reply['status'], "pass", msg="status key fail")
+            self.assertEqual(reply['message'], "lists found", msg="message key fail")
+
+    def test_11_view_an_existing_list(self):
+        self.add_user()  # add this test user because tearDown drops all table data
+        self.add_list()
+        with self.client:
+            # you have to be logged in to view a list
+            response = self.client.post('/auth/login', content_type='application/json',
+                                        data=json.dumps(dict(username="ivo", password="ivo")))
+            reply = json.loads(response.data.decode())
+            headers = {'Authorization': format(reply['token'])}
+
+            response = self.client.get('/shoppinglists/1', content_type='application/json', headers=headers)
+            reply = json.loads(response.data.decode())
+            self.assertTrue(reply['list'], msg="lists key fail")
+            self.assertEqual(reply['count'], "1", msg="count key fail")
+            self.assertEqual(reply['status'], "pass", msg="status key fail")
+            self.assertEqual(reply['message'], "list found", msg="message key fail")
+
+    def test_12_view_a_non_existing_list(self):
+        self.add_user()  # add this test user because tearDown drops all table data
+        with self.client:
+            # you have to be logged in to view a list
+            response = self.client.post('/auth/login', content_type='application/json',
+                                        data=json.dumps(dict(username="ivo", password="ivo")))
+
+            reply = json.loads(response.data.decode())
+            headers = {'Authorization': format(reply['token'])}
+
+            response = self.client.get('/shoppinglists/2000', content_type='application/json', headers=headers)
+            reply = json.loads(response.data.decode())
+            self.assertEqual(reply['count'], "0", msg="count key fail")
+            self.assertEqual(reply['status'], "pass", msg="status key fail")
+            self.assertEqual(reply['message'], "list not found", msg="message key fail")
+
+    def test_13_update_an_existing_list(self):
+        self.add_user()  # add this test user because tearDown drops all table data
+        self.add_list()
+        with self.client:
+            # you have to be logged in to view a list
+            response = self.client.post('/auth/login', content_type='application/json',
+                                        data=json.dumps(dict(username="ivo", password="ivo")))
+            reply = json.loads(response.data.decode())
+            headers = {'Authorization': format(reply['token'])}
+
+            response = self.client.put('/shoppinglists/1', content_type='application/json',
+                                       headers=headers,
+                                       data=json.dumps(dict(list="cups")))
+            reply = json.loads(response.data.decode())
+
+            self.assertTrue(reply['list'], msg="lists key fail")
+            self.assertEqual(reply['status'], "pass", msg="status key fail")
+            self.assertEqual(reply['message'], "list updated", msg="message key fail")
+
+    def test_14_update_a_non_existing_list(self):
+        self.add_user()  # add this test user because tearDown drops all table data
+        with self.client:
+            # you have to be logged in to view a list
+            response = self.client.post('/auth/login', content_type='application/json',
+                                        data=json.dumps(dict(username="ivo", password="ivo")))
+            reply = json.loads(response.data.decode())
+            headers = {'Authorization': format(reply['token'])}
+
+            response = self.client.put('/shoppinglists/100', content_type='application/json',
+                                       headers=headers,
+                                       data=json.dumps(dict(list="cups")))
+            reply = json.loads(response.data.decode())
+            self.assertEqual(reply['status'], "fail", msg="status key fail")
+            self.assertEqual(reply['message'], "list not updated", msg="message key fail")
+
+    def test_15_delete_an_existing_list(self):
+        self.add_user()
+        self.add_list()
+        with self.client:
+            response = self.client.post('/auth/login', content_type='application/json',
+                                        data=json.dumps(dict(username="ivo", password="ivo")))
+            reply = json.loads(response.data.decode())
+            headers = {'Authorization': format(reply['token'])}
+
+            response = self.client.delete('/shoppinglists/1', content_type='application/json',
+                                       headers=headers)
+            reply = json.loads(response.data.decode())
+            self.assertEqual(reply['status'], "pass", msg="message key fail")
+            self.assertEqual(reply['message'], "list deleted", msg="message key fail")
+
+    def test_16_delete_an_non_existing_list(self):
+        self.add_user()
+        with self.client:
+            response = self.client.post('/auth/login', content_type='application/json',
+                                        data=json.dumps(dict(username="ivo", password="ivo")))
+            reply = json.loads(response.data.decode())
+            headers = {'Authorization': format(reply['token'])}
+
+            response = self.client.delete('/shoppinglists/1', content_type='application/json',
+                                       headers=headers)
+            reply = json.loads(response.data.decode())
+            self.assertEqual(reply['status'], "fail", msg="message key fail")
+            self.assertEqual(reply['message'], "list not deleted", msg="message key fail")
+
+  # --------------------------- /shoppinglists items endpoint tests ----------------------------------------
+
+    def test_17_add_an_item_to_an_existing_list(self):
+        self.add_user()  # add this test user because tearDown drops all table data
+        self.add_list()
+        with self.client:
+            # you have to be logged in to create a list
+            response = self.client.post('/auth/login',
+                                        content_type='application/json',
+                                        data=json.dumps(dict(username="ivo", password="ivo")))
+
+            reply = json.loads(response.data.decode())
+            headers = {'Authorization': format(reply['token'])}
+
+            response = self.client.post('/shoppinglists/1/items',
+                                        content_type='application/json',
+                                        headers=headers,
+                                        data=json.dumps(dict(name="soda",
+                                                             price="5000")))
+            reply = json.loads(response.data.decode())
+            self.assertTrue(reply['item_id'], msg="user_id key fail")
+            self.assertEqual(reply['status'], "pass", msg="status key fail")
+            self.assertEqual(reply['message'], "item added to list", msg="message key fail")
+
+    def test_18_add_an_item_to_a_non_existing_list(self):
+        self.add_user()  # add this test user because tearDown drops all table data
+        with self.client:
+            # you have to be logged in to create a list
+            response = self.client.post('/auth/login',
+                                        content_type='application/json',
+                                        data=json.dumps(dict(username="ivo", password="ivo")))
+
+            reply = json.loads(response.data.decode())
+            headers = {'Authorization': format(reply['token'])}
+
+            response = self.client.post('/shoppinglists/1/items',
+                                        content_type='application/json',
+                                        headers=headers,
+                                        data=json.dumps(dict(name="soda",
+                                                             price="5000")))
+            reply = json.loads(response.data.decode())
+            self.assertEqual(reply['status'], "fail", msg="status key fail")
+            self.assertEqual(reply['message'], "list does not exist", msg="message key fail")
+
+    def test_19_update_an_item_on_an_existing_list(self):
+        self.add_user()  # add this test user because tearDown drops all table data
+        self.add_list()
+        self.add_item()
+        with self.client:
+            # you have to be logged in to view a list
+            response = self.client.post('/auth/login', content_type='application/json',
+                                        data=json.dumps(dict(username="ivo", password="ivo")))
+            reply = json.loads(response.data.decode())
+            headers = {'Authorization': format(reply['token'])}
+
+            response = self.client.put('/shoppinglists/1/items/1', content_type='application/json',
+                                       headers=headers,
+                                       data=json.dumps(dict(name="item", price="5000")))
+            reply = json.loads(response.data.decode())
+            self.assertTrue(reply['item'], msg="item key fail")
+            self.assertEqual(reply['status'], "pass", msg="status key fail")
+            self.assertEqual(reply['message'], "item updated", msg="message key fail")
+
+    def test_20_update_a_non_existing_item_on_an_existing_list(self):
+        self.add_user()  # add this test user because tearDown drops all table data
+        self.add_list()
+        with self.client:
+            # you have to be logged in to view a list
+            response = self.client.post('/auth/login', content_type='application/json',
+                                        data=json.dumps(dict(username="ivo", password="ivo")))
+            reply = json.loads(response.data.decode())
+            headers = {'Authorization': format(reply['token'])}
+
+            response = self.client.put('/shoppinglists/1/items/1', content_type='application/json',
+                                       headers=headers,
+                                       data=json.dumps(dict(name="item", price="5000")))
+            reply = json.loads(response.data.decode())
+            self.assertEqual(reply['status'], "fail", msg="status key fail")
+            self.assertEqual(reply['message'], "item not updated", msg="message key fail")
+
+    def test_21_update_an_item_on_an_non_existing_list(self):
+        self.add_user()  # add this test user because tearDown drops all table data
+        self.add_item()
+        with self.client:
+            # you have to be logged in to view a list
+            response = self.client.post('/auth/login', content_type='application/json',
+                                        data=json.dumps(dict(username="ivo", password="ivo")))
+            reply = json.loads(response.data.decode())
+            headers = {'Authorization': format(reply['token'])}
+
+            response = self.client.put('/shoppinglists/1/items/1', content_type='application/json',
+                                       headers=headers,
+                                       data=json.dumps(dict(name="item", price="5000")))
+            reply = json.loads(response.data.decode())
+            self.assertEqual(reply['status'], "fail", msg="status key fail")
+            self.assertEqual(reply['message'], "list does not exist", msg="message key fail")
+
+    def test_22_delete_an_item_on_an_existing_list(self):
+        self.add_user()  # add this test user because tearDown drops all table data
+        self.add_list()
+        self.add_item()
+        with self.client:
+            # you have to be logged in to view a list
+            response = self.client.post('/auth/login', content_type='application/json',
+                                        data=json.dumps(dict(username="ivo", password="ivo")))
+            reply = json.loads(response.data.decode())
+            headers = {'Authorization': format(reply['token'])}
+
+            response = self.client.delete('/shoppinglists/1/items/1', content_type='application/json',
+                                       headers=headers)
+            reply = json.loads(response.data.decode())
+            self.assertEqual(reply['status'], "pass", msg="status key fail")
+            self.assertEqual(reply['message'], "item deleted", msg="message key fail")
+
+    def test_23_delete_a_non_existing_item_on_an_existing_list(self):
+        self.add_user()  # add this test user because tearDown drops all table data
+        self.add_list()
+        with self.client:
+            # you have to be logged in to view a list
+            response = self.client.post('/auth/login', content_type='application/json',
+                                        data=json.dumps(dict(username="ivo", password="ivo")))
+            reply = json.loads(response.data.decode())
+            headers = {'Authorization': format(reply['token'])}
+
+            response = self.client.delete('/shoppinglists/1/items/1', content_type='application/json',
+                                          headers=headers)
+            reply = json.loads(response.data.decode())
+
+            self.assertEqual(reply['status'], "fail", msg="status key fail")
+            self.assertEqual(reply['message'], "item not found", msg="message key fail")
+
+    def test_24_delete_an_existing_item_on_a_non_existing_list(self):
+        self.add_user()  # add this test user because tearDown drops all table data
+        self.add_item()
+        with self.client:
+            # you have to be logged in to view a list
+            response = self.client.post('/auth/login', content_type='application/json',
+                                        data=json.dumps(dict(username="ivo", password="ivo")))
+            reply = json.loads(response.data.decode())
+            headers = {'Authorization': format(reply['token'])}
+
+            response = self.client.delete('/shoppinglists/1/items/1', content_type='application/json',
+                                          headers=headers)
+            reply = json.loads(response.data.decode())
+
+            self.assertEqual(reply['status'], "fail", msg="status key fail")
+            self.assertEqual(reply['message'], "list does not exist", msg="message key fail")
+
+    #------------------------------------token testing-----------------------------------------------
+
+    def test_25_calling_any_endpoint_with_no_token(self):
+        with self.client:
+            response = self.client.get('/shoppinglists',
+                                       content_type='application/json')
+
+            reply = json.loads(response.data.decode())
+            self.assertEqual(reply['message'], "cant access to login", msg="message key fail")
+
+    def test_26_calling_any_endpoint_with_wrong_token(self):
+        with self.client:
+            # you have to be logged in to view a user details
+            token = "SDWFiosdf1.spoajsdf.POISDHnkjsaf823rokn"
+            headers = {'Authorization': format(token)}
+
+            response = self.client.get('/shoppinglists',
+                                       content_type='application/json', headers=headers)
+
+            reply = json.loads(response.data.decode())
+            #self.assertEqual(reply['status'], "fail", msg="status key fail")
+            self.assertTrue(reply['message'],  msg="message key fail")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
