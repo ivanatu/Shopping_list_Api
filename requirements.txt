@@ -14,8 +14,9 @@ Flask-Bootstrap==3.3.7.1
 Flask-Migrate==2.1.0
 Flask-Script==2.0.5
 Flask-SQLAlchemy==2.2
+Flask-Testing==0.6.2
 freeze==1.0.10
-idna==2.6
+idna==2.6 pi
 isort==4.2.15
 itsdangerous==0.24
 Jinja2==2.9.6
