@@ -10,9 +10,6 @@ services:
 
 before_script:
   - psql -c "create database shoplist;" -U postgres
-  - python run.py db init
-  - python run.py db migrate
-  - python run.py db upgrade
 
 # command to run tests
 script:
