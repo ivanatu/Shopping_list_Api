@@ -7,9 +7,11 @@ install:
   - pip install coveralls
   - pip install coverage
   - pip install flask
+
+services:
+  -postgresql
  
  before_script:
-  - psql -c "CREATE ROLE shoplist PASSWORD 'shoplist' CREATEDB CREATEROLE INHERIT LOGIN;" -U postgres
   - psql -c "create database shoplist;" -U postgres
   - python run.py db init
   - python run.py db migrate
