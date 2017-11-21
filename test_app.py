@@ -116,18 +116,18 @@ class TestShoppingListAPI(TestCase):
 # --------------------------- /auth/logout endpoint tests --------------------------------------------------------
         # @unittest.skip("skipping logout test")
 
-    def test_05_logout(self):
-        with self.client:
-            # you have to be logged in to log out
-            self.client.post('/auth/login',
-                             content_type='application/json',
-                             data=json.dumps(dict(username="ivo", password="ivo")))
-
-            response = self.client.get('/auth/logout', content_type='application/json')
-            reply = json.loads(response.data.decode())
-
-            self.assertEqual(reply['status'], "pass", msg="status key fail")
-            self.assertEqual(reply['message'], "logout was successful", msg="message key fail")
+    # def test_05_logout(self):
+    #     with self.client:
+    #         # you have to be logged in to log out
+    #         self.client.post('/auth/login',
+    #                          content_type='application/json',
+    #                          data=json.dumps(dict(username="ivo", password="ivo")))
+    #
+    #         response = self.client.get('/auth/logout', content_type='application/json')
+    #         reply = json.loads(response.data.decode())
+    #
+    #         self.assertEqual(reply['status'], "pass", msg="status key fail")
+    #         self.assertEqual(reply['message'], "logout was successful", msg="message key fail")
 
     def test_06_reset_password_with_wrong_credentials(self):
         self.add_user()
