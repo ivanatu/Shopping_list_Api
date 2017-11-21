@@ -21,7 +21,7 @@ class User(db.Model):
         self.password = password
 
     def generate_auth_token(self, expiration=100):
-        from views import app
+        from app.views import app
         try:
             payload = {
                 'exp': datetime.utcnow() + timedelta(minutes=expiration),
@@ -41,7 +41,7 @@ class User(db.Model):
     @staticmethod
     def decode_token(token):
         """Decodes token from the authorization header"""
-        from views import app
+        from app.views import app
         try:
             # try to decode the token using the secret variable
             payload = jwt.decode(token, app.config.get('SECRET_KEY'))
@@ -76,8 +76,9 @@ class Shopping_list(db.Model):
     list = db.Column(db.String(80), unique=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
-    def __init__(self, list):
+    def __init__(self, list, user_id):
         self.list = list
+        self.user_id=user_id
 
     def __repr__(self):
         return '<Shopping_list %r>' % self.list

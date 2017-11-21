@@ -1,0 +1,11 @@
+.idea
+venv/
+*/.DS_Store
+*.pyc
+app/*/__pycache__/
+.DS_Store
+#__init__.cpython-36.pyc
+#views.cpython-36.pyc
+#app/migrations/versions/*
+#/__pycache__/
+#*.cpython-36.pyc

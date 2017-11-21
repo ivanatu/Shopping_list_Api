@@ -1,44 +1,17 @@
-import json
+import json			
+from flask import Flask, request, jsonify, render_template, session
+from app.models import Item, Shopping_list, User, db
+from app import app
 import os
-import utility
-from flask import Flask, request, jsonify, render_template
-from models import Item, Shopping_list, User, db
 from werkzeug.security import generate_password_hash, check_password_hash
 
-app = Flask(__name__, template_folder='../templates', 
-
-static_folder='../static')
-
-POSTGRES = {
-	'user': 'ivan',
-	'pw': '1234',
-	'db': 'shopping_list',
-	'host': 'localhost',
-	'port': '5432',
-}
-
-app.config['DEBUG'] = True
-if os.environ.get('DATABASE_URL'):
-	app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
-else:
-	app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://%(user)s:%(pw)s@%(host)s:%(port)s/%(db)s' % POSTGRES
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://%(user)s:\
-#%(pw)s@%(host)s:%(port)s/%(db)s' % POSTGRES
-#app.config['SQLALCHEMY_DATABASE_URI'] = 
-
-"postgresql://ivan:1234@localhost/shopping_list"
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = 'this-is-my-secret-key'
-db.init_app(app)
-
-
-# @app.route('/', methods=['GET'])
-# def index():
-#     """
-#     This endpoint will return the API documentation
-#     :return:
-#     """
-#     return render_template('index.html')
+@app.route('/', methods=['GET'])
+def index():
+    """
+    This endpoint will return the API documentation
+    :return:
+    """
+    return render_template('index.html')
 
 
 @app.route('/auth/register', methods=['POST'])
@@ -99,7 +72,15 @@ def logout():
 	This endpoint will logout a user
 	:return:
 	"""
-	return jsonify({'status': 'pass', 'message': 'logout was successful'}), 200
+	auth_header = request.headers.get('Authorization')
+	if auth_header:
+		user_id = User.decode_token(auth_header)
+		if not isinstance(user_id, str):
+			user = User.query.filter_by(user_id=session["user"]).first()
+			session.pop('user', None)
+			return jsonify({'status': 'pass', 'message': 'logout was successful'}), 200
+		return jsonify({"error": "user not in isinstance"}), 401
+	return jsonify({"error": " cant access to login"}), 401
 
 
 @app.route('/auth/reset-password', methods=['POST'])
@@ -142,7 +123,7 @@ def add_a_list():
 		if not isinstance(user_id, str):
 			if 'list' in data:
 				# create a list
-				the_list = Shopping_list(list=data['list'])
+				the_list = Shopping_list(list=data['list'], user_id=user_id)
 				db.session.add(the_list)
 				db.session.commit()
 				response = jsonify({'id': the_list.id,
@@ -152,8 +133,8 @@ def add_a_list():
 									})
 				return response, 201
 			return jsonify({'status': 'fail', 'message': 'list is missing in the data'}), 400
-		return jsonify({"error":"user not in isinstance"}), 401
-	return jsonify({"error":" cant access to login"}), 401
+		return jsonify({'status': 'fail', 'message':'user not in isinstance'}), 401
+	return jsonify({'status': 'fail', 'message':'cant access to login'}), 402
 
 
 @app.route('/shoppinglists', methods=['GET'])
@@ -180,7 +161,8 @@ def view_all_lists():
 
 				lists = Shopping_list.query.filter(Shopping_list.list.like("%"+q.strip()+"%")).filter_by(user_id=user_id).paginate(page, limit, False).items
 			else:
-				lists = Shopping_list.query.filter_by(id=id).paginate(page, limit, False).items
+				#print("here")
+				lists = Shopping_list.query.filter_by(user_id=user_id).paginate(page, limit, False).items
 			for a_list in lists:
 				result = {
 					'id': a_list.id,
@@ -193,8 +175,8 @@ def view_all_lists():
 								'status': 'pass',
 								'message': 'lists found'}), 200
 			return jsonify({'count': '0', 'status': 'fail', 'message': 'no lists found'}), 404
-		return jsonify({"error":"user not in isinstance"}), 401
-	return jsonify({"error":" cant access to login"}), 401
+		return jsonify({"message":"user not in isinstance"}), 401
+	return jsonify({"message":"cant access to login"}), 401
 
 
 @app.route('/shoppinglists/<int:id>', methods=['GET'])
@@ -218,7 +200,7 @@ def get_a_list(id):
 									'message': 'list found'})
 				return response, 200
 			return jsonify({'count': '0', 'status': 'pass', 'message': 'list not found'}), 404
-		return jsonify({"error":"user not in isinstance"}), 401
+		return jsonify({"error":"user not in instance"}), 401
 	return jsonify({"error":" cant access to login"}), 401
 
 
@@ -350,11 +332,8 @@ def delete_item_from_list(list_id, item_id):
 					db.session.delete(the_item)
 					db.session.commit()
 					return jsonify({'status': 'pass', 'message': 'item deleted'}), 200
-				return jsonify({'status': 'fail', 'message': 'item not not found'}), 404
+				return jsonify({'status': 'fail', 'message': 'item not found'}), 404
 			return jsonify({'status': 'fail', 'message': 'list does not exist'}), 404
 		return jsonify({"error":"user not in isinstance"}), 401
 	return jsonify({"error":" cant access to login"}), 401
 
-if __name__ == '__main__':
-	app.run(host=app.config.get('HOST', '0.0.0.0'),
-	port=app.config.get('PORT', 5001))
