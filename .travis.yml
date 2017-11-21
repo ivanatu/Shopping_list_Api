@@ -1,23 +1,20 @@
 language: python
-
 python:
   - "3.6.1"
-cache: pip
+
 install:
   - pip install -r requirements.txt
-  - pip install coveralls
-  - pip install coverage
-  - pip install flask
 
 services:
-  -postgresql
- 
- before_script:
-  - psql -c "create database shopping_list;" -U postgres
+  - postgresql
+
+before_script:
+  - psql -c "create database shoplist;" -U postgres
   - python run.py db init
   - python run.py db migrate
   - python run.py db upgrade
-  
+
+# command to run tests
 script:
   - nosetests --with-coverage test_app.py
 
