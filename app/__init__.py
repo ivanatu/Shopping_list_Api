@@ -5,7 +5,7 @@ from app.models import db
 app = Flask(__name__, template_folder='./templates', static_folder='./static')
 
 POSTGRES = {
-    'user': 'ivan2',
+    'user': 'postgres',
     'pw': '1234',
     'db': 'shopping_list',
     'host': 'localhost',

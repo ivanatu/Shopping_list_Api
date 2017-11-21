@@ -9,3 +9,5 @@ app/*/__pycache__/
 #app/migrations/versions/*
 #/__pycache__/
 #*.cpython-36.pyc
+.cache/v/cache/lastfailed
+.cache/*
