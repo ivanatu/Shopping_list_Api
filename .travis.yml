@@ -12,11 +12,9 @@ before_script:
   - psql -c "CREATE ROLE postgres PASSWORD '' CREATEDB CREATEROLE INHERIT LOGIN;" -U postgres
   - psql -c "create database tests;" -U postgres
 
-
 # command to run tests
 script:
   - nosetests --with-coverage test_app.py
-  nosetests --with-coverage test_app.py
 
 after_success:
   - coveralls
