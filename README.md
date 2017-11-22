@@ -1,10 +1,4 @@
-[![Coverage Status](https://coveralls.io/repos/github/ivanatu/Shopping_list_Api/badge.png?branch=master)](https://coveralls.io/github/ivanatu/Shopping_list_Api?branch=master)
-
-
-[![Maintainability](https://api.codeclimate.com/v1/badges/cc4de24321a651891f87/maintainability)](https://codeclimate.com/github/ivanatu/Shopping_list_Api/maintainability)
-
-[![Test Coverage](https://api.codeclimate.com/v1/badges/cc4de24321a651891f87/test_coverage)](https://codeclimate.com/github/ivanatu/Shopping_list_Api/test_coverage)
-
+[![Build Status](https://travis-ci.org/ivanatu/Shopping_list_Api.svg?branch=api)](https://travis-ci.org/ivanatu/Shopping_list_Api)
 
 # Shopping_list_Api
 
