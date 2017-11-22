@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/ivanatu/Shopping_list_Api.svg?branch=api)](https://travis-ci.org/ivanatu/Shopping_list_Api)
+[![Build Status](https://travis-ci.org/ivanatu/Shopping_list_Api.svg?branch=development)](https://travis-ci.org/ivanatu/Shopping_list_Api?branch=developments)
 
 
 [![Test Coverage](https://api.codeclimate.com/v1/badges/cc4de24321a651891f87/test_coverage)](https://codeclimate.com/github/ivanatu/Shopping_list_Api/test_coverage)
