@@ -9,7 +9,7 @@ services:
   - postgresql
 
 before_script:
-  - psql -c "CREATE ROLE postgres PASSWORD '' CREATEDB CREATEROLE INHERIT LOGIN;" -U postgres
+  - psql -c "CREATE ROLE test PASSWORD '' CREATEDB CREATEROLE INHERIT LOGIN;" -U postgres
   - psql -c "create database tests;" -U postgres
 
 # command to run tests
