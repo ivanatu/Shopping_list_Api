@@ -11,9 +11,7 @@ services:
 before_script:
   - psql -c "CREATE ROLE postgres PASSWORD '' CREATEDB CREATEROLE INHERIT LOGIN;" -U postgres
   - psql -c "create database tests;" -U postgres
-  - python run.py db init
-  - python run.py db migrate
-  - python run.py db upgrade
+
 
 # command to run tests
 script:
