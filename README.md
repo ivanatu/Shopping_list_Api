@@ -3,8 +3,7 @@
 
 [![Test Coverage](https://api.codeclimate.com/v1/badges/cc4de24321a651891f87/test_coverage)](https://codeclimate.com/github/ivanatu/Shopping_list_Api/test_coverage)
 
-[![Coverage Status](https://coveralls.io/repos/github/ivanatu/Shopping_list_Api/badge.svg)](https://coveralls.io/github/ivanatu/Shopping_list_Api)
-
+[![Coverage Status](https://coveralls.io/repos/github/ivanatu/Shopping_list_Api/badge.svg?branch=development)](https://coveralls.io/github/ivanatu/Shopping_list_Api?branch=development)
 
 #Shopping_list_Api
 
