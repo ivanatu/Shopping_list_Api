@@ -1,5 +1,7 @@
 [![Build Status](https://travis-ci.org/ivanatu/Shopping_list_Api.svg?branch=api)](https://travis-ci.org/ivanatu/Shopping_list_Api)
 
+
+[![Test Coverage](https://api.codeclimate.com/v1/badges/cc4de24321a651891f87/test_coverage)](https://codeclimate.com/github/ivanatu/Shopping_list_Api/test_app.py)
 # Shopping_list_Api
 
 In this repo we are basically creating API . We are trying to implement end points fir our applicaton to run . The Application will be interacting with the persistent data from the database and this will help us use end points for GET, POST, PUT, DELETE. All the functionalities run with POstman App on the google apps.
