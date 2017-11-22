@@ -1,7 +1,9 @@
-import json			
+import json
+
 from flask import Flask, request, jsonify, render_template, session
 from app.models import Item, Shopping_list, User, db
 from app import app
+
 import os
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -151,6 +153,7 @@ def view_all_lists():
 		if not isinstance(user_id, str):
 			results = []
 			# query parameters
+			print ("hello")
 			q = request.args.get('q', None)  # this parameter contains the name of the list
 			limit = request.args.get('limit', 50)  # limits the number of records to 50 per page (optional)
 			page = request.args.get('page', 1)  # page one is default, but page can be passed as an argument (optional)
