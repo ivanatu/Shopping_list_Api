@@ -20,28 +20,6 @@ class TestShoppingListAPI(TestCase):
     def create_app(self):
         return app
 
-        # app= Flask("app")
-        #
-        # self.app = app
-        # #self.app.testing = True
-        # #self.client = app.test_client
-        #
-        # POSTGRES = {
-        #     'user': 'postgres',
-        #     'pw': '',
-        #     'db': 'tests',
-        #     'host': 'localhost',
-        #     'port': '5432',
-        # }
-        #
-        # self.app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:1234@localhost:5432/tests'
-        # self.app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-        #
-        # with self.app.app_context():
-        #     # db.init_app(app)
-        #     db.create_all()
-        # return app
-
     def add_user(self):
         """This is a test user to use during the running of tests"""
         user = models.User(first_name = self.test_first_name,
