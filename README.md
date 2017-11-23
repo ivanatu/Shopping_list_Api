@@ -42,10 +42,14 @@ Requirements
 Python 2.7.1x+. preferably use Python 3.x.x+
 Tests
 
-   $ cd app
+   $ cd app    
+   $ To run tests,   
+   $ make sure the TEST variable is turned to TRUE  
+   $ TEST=TRUE  
    $ nosetest --with-coverage test_app.py
+   
+  
 Running the application
-
 To run this application on a linux box, execute the following command.
 
     $ cd shopping_list_api
@@ -56,7 +60,12 @@ To run this application on a linux box, execute the following command.
     $ python run.py db migrate
     $ python run.py db upgrade
     $ nohup python run.py runserver > logs/shop.log 2>&1>> logs/shop.log & disown
+To run tests,
+make sure the TEST variable is turned to TRUE
+TEST=TRUE
+
 Base URL for the API
+
 
 The base url for this api is https://app.swaggerhub.com/apis/ivanatu/shopping_list_API/1.0.0#/ in case you want to try out this API endpoints using curl or postman from your computer with out cloning this repository. For example, on linux commandline issue this curl command to login (you will need to first register to login, please see documentation).
 
