@@ -56,10 +56,10 @@ To run this application on a linux box, execute the following command.
     $ virtualenv virtenv
     $ source virtenv/bin/activate
     $ pip install -r requirements.txt
-    $ python run.py db init
-    $ python run.py db migrate
-    $ python run.py db upgrade
-    $ nohup python run.py runserver > logs/shop.log 2>&1>> logs/shop.log & disown
+    $ python manage.py db init
+    $ python manage.py db migrate
+    $ python manage.py db upgrade
+    $ python run.py 
 To run tests,
 make sure the TEST variable is turned to TRUE
 TEST=TRUE
