@@ -153,10 +153,10 @@ def view_all_lists():
 		if not isinstance(user_id, str):
 			results = []
 			# query parameters
-			print ("hello")
+			#print ("hello")
 			q = request.args.get('q', None)  # this parameter contains the name of the list
-			limit = request.args.get('limit', 50)  # limits the number of records to 50 per page (optional)
-			page = request.args.get('page', 1)  # page one is default, but page can be passed as an argument (optional)
+			limit = request.args.get('limit', 50, type=int)  # limits the number of records to 50 per page (optional)
+			page = request.args.get('page', 1, type=int)  # page one is default, but page can be passed as an argument (optional)
 			if q is not None:
 				 #lists = Shopping_list.query.filter(
 				 #	Shopping_list.list.like("%" + q.strip() + "%")).\
