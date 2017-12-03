@@ -63,9 +63,11 @@ class Item(db.Model):
     price = db.Column(db.Integer)
     List_id = db.Column(db.Integer, db.ForeignKey('shopping_lists.id'))
 
-    def __init__(self, name, price):
+    def __init__(self, name, price, List_id):
         self.name = name
         self.price = price
+        self.List_id=List_id
+
 
     def __repr__(self):
         return '<Item %r>' % self.name
