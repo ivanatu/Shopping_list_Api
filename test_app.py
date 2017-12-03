@@ -38,7 +38,8 @@ class TestShoppingListAPI(TestCase):
     def add_item(self):
         """This is a test list item to use during the running of tests"""
         item = models.Item(name=self.test_name,
-                           price=self.test_price)
+                           price=self.test_price,
+                           List_id=1)
         db.session.add(item)
         db.session.commit()
 
@@ -112,8 +113,6 @@ class TestShoppingListAPI(TestCase):
             self.assertEqual(reply['status'], "pass", msg="status key fail")
             self.assertEqual(reply['message'], "login was successful", msg="message key fail")
 
-# --------------------------- /auth/reset-password endpoint tests --------------------------------------------------------
-
 # --------------------------- /auth/logout endpoint tests --------------------------------------------------------
         # @unittest.skip("skipping logout test")
 
@@ -129,6 +128,8 @@ class TestShoppingListAPI(TestCase):
     #
     #         self.assertEqual(reply['status'], "pass", msg="status key fail")
     #         self.assertEqual(reply['message'], "logout was successful", msg="message key fail")
+
+# --------------------------- /auth/reset-password endpoint tests --------------------------------------------------------
 
     def test_06_reset_password_with_wrong_credentials(self):
         self.add_user()
@@ -259,7 +260,7 @@ class TestShoppingListAPI(TestCase):
             response = self.client.get('/shoppinglists/2000', content_type='application/json', headers=headers)
             reply = json.loads(response.data.decode())
             self.assertEqual(reply['count'], "0", msg="count key fail")
-            self.assertEqual(reply['status'], "pass", msg="status key fail")
+            self.assertEqual(reply['status'], "fail", msg="status key fail")
             self.assertEqual(reply['message'], "list not found", msg="message key fail")
 
     def test_13_update_an_existing_list(self):
@@ -370,7 +371,34 @@ class TestShoppingListAPI(TestCase):
             self.assertEqual(reply['status'], "fail", msg="status key fail")
             self.assertEqual(reply['message'], "list does not exist", msg="message key fail")
 
-    def test_19_update_an_item_on_an_existing_list(self):
+    def test_19_view_existing_items_on_an_existing_list(self):
+        self.add_user()  # add this test user because tearDown drops all table data
+        self.add_list()
+        self.add_item()
+        with self.client:
+            response = self.client.post('/auth/login', content_type='application/json',
+                                        data=json.dumps(dict(username="ivo", password="ivo")))
+            reply = json.loads(response.data.decode())
+            headers = {'Authorization': format(reply['token'])}
+            response = self.client.get('/shoppinglists/1/items', content_type='application/json',
+                                       headers=headers)
+            reply = json.loads(response.data.decode())
+            self.assertEqual(reply['status'], "pass", msg="status key fail")
+
+    def test_20_view_non_existing_items_on_an_existing_list(self):
+        self.add_user()  # add this test user because tearDown drops all table data
+        self.add_list()
+        with self.client:
+            response = self.client.post('/auth/login', content_type='application/json',
+                                        data=json.dumps(dict(username="ivo", password="ivo")))
+            reply = json.loads(response.data.decode())
+            headers = {'Authorization': format(reply['token'])}
+            response = self.client.get('/shoppinglists/1/items', content_type='application/json',
+                                       headers=headers)
+            reply = json.loads(response.data.decode())
+            self.assertEqual(reply['status'], "fail", msg="status key fail")
+
+    def test_21_update_an_item_on_an_existing_list(self):
         self.add_user()  # add this test user because tearDown drops all table data
         self.add_list()
         self.add_item()
@@ -389,7 +417,7 @@ class TestShoppingListAPI(TestCase):
             self.assertEqual(reply['status'], "pass", msg="status key fail")
             self.assertEqual(reply['message'], "item updated", msg="message key fail")
 
-    def test_20_update_a_non_existing_item_on_an_existing_list(self):
+    def test_22_update_a_non_existing_item_on_an_existing_list(self):
         self.add_user()  # add this test user because tearDown drops all table data
         self.add_list()
         with self.client:
@@ -406,8 +434,9 @@ class TestShoppingListAPI(TestCase):
             self.assertEqual(reply['status'], "fail", msg="status key fail")
             self.assertEqual(reply['message'], "item not updated", msg="message key fail")
 
-    def test_21_update_an_item_on_an_non_existing_list(self):
+    def test_23_update_an_item_on_an_non_existing_list(self):
         self.add_user()  # add this test user because tearDown drops all table data
+        self.add_list()
         self.add_item()
         with self.client:
             # you have to be logged in to view a list
@@ -416,14 +445,14 @@ class TestShoppingListAPI(TestCase):
             reply = json.loads(response.data.decode())
             headers = {'Authorization': format(reply['token'])}
 
-            response = self.client.put('/shoppinglists/1/items/1', content_type='application/json',
+            response = self.client.put('/shoppinglists/3/items/1', content_type='application/json',
                                        headers=headers,
                                        data=json.dumps(dict(name="item", price="5000")))
             reply = json.loads(response.data.decode())
             self.assertEqual(reply['status'], "fail", msg="status key fail")
             self.assertEqual(reply['message'], "list does not exist", msg="message key fail")
 
-    def test_22_delete_an_item_on_an_existing_list(self):
+    def test_24_delete_an_item_on_an_existing_list(self):
         self.add_user()  # add this test user because tearDown drops all table data
         self.add_list()
         self.add_item()
@@ -440,7 +469,7 @@ class TestShoppingListAPI(TestCase):
             self.assertEqual(reply['status'], "pass", msg="status key fail")
             self.assertEqual(reply['message'], "item deleted", msg="message key fail")
 
-    def test_23_delete_a_non_existing_item_on_an_existing_list(self):
+    def test_25_delete_a_non_existing_item_on_an_existing_list(self):
         self.add_user()  # add this test user because tearDown drops all table data
         self.add_list()
         with self.client:
@@ -457,8 +486,9 @@ class TestShoppingListAPI(TestCase):
             self.assertEqual(reply['status'], "fail", msg="status key fail")
             self.assertEqual(reply['message'], "item not found", msg="message key fail")
 
-    def test_24_delete_an_existing_item_on_a_non_existing_list(self):
+    def test_26_delete_an_existing_item_on_a_non_existing_list(self):
         self.add_user()  # add this test user because tearDown drops all table data
+        self.add_list()
         self.add_item()
         with self.client:
             # you have to be logged in to view a list
@@ -467,7 +497,7 @@ class TestShoppingListAPI(TestCase):
             reply = json.loads(response.data.decode())
             headers = {'Authorization': format(reply['token'])}
 
-            response = self.client.delete('/shoppinglists/1/items/1', content_type='application/json',
+            response = self.client.delete('/shoppinglists/3/items/1', content_type='application/json',
                                           headers=headers)
             reply = json.loads(response.data.decode())
 
@@ -476,15 +506,15 @@ class TestShoppingListAPI(TestCase):
 
     #------------------------------------token testing-----------------------------------------------
 
-    def test_25_calling_any_endpoint_with_no_token(self):
+    def test_27_calling_any_endpoint_with_no_token(self):
         with self.client:
             response = self.client.get('/shoppinglists',
                                        content_type='application/json')
 
             reply = json.loads(response.data.decode())
-            self.assertEqual(reply['message'], "cant access to login", msg="message key fail")
+            self.assertEqual(response.status_code, 401)
 
-    def test_26_calling_any_endpoint_with_wrong_token(self):
+    def test_28_calling_any_endpoint_with_wrong_token(self):
         with self.client:
             # you have to be logged in to view a user details
             token = "SDWFiosdf1.spoajsdf.POISDHnkjsaf823rokn"
