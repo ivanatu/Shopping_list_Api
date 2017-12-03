@@ -1,13 +1,10 @@
 .idea
 venv/
 */.DS_Store
-*.pyc
-app/*/__pycache__/
+**/*.pyc
+**/pycache/
 .DS_Store
-#__init__.cpython-36.pyc
-#views.cpython-36.pyc
 #app/migrations/versions/*
-#/__pycache__/
 #*.cpython-36.pyc
 .cache/v/cache/lastfailed
 .cache/*
