@@ -1,7 +1,7 @@
 import unittest
 from flask_testing import TestCase
 from app.models import db
-from app import app, models
+from app import shop_api, models
 import json
 from flask import Flask
 from werkzeug.security import generate_password_hash
@@ -17,8 +17,9 @@ class TestShoppingListAPI(TestCase):
     test_name = "item"
     test_price = "5000"
 
+
     def create_app(self):
-        return app
+        return shop_api
 
     def add_user(self):
         """This is a test user to use during the running of tests"""
