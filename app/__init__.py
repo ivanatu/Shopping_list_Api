@@ -1,36 +1,24 @@
 from flask import Flask
 import os
-from app.models import db
+from flask_sqlalchemy import SQLAlchemy
 
-app = Flask(__name__, template_folder='./templates', static_folder='./static')
-TEST = True
+from config import SQLALCHEMY_DATABASE_URI, SQLALCHEMY_DATABASE_URI2, SECRET_KEY
 
-POSTGRES = {
-    'user': 'ivan2',
-    'pw': '1234',
-    'db': 'shopping_list',
-    'host': 'localhost',
-    'port': '5432',
-}
-TEST_POSTGRES = {
-    'user': 'postgres',
-    'pw': '',
-    'db': 'tests',
-    'host': 'localhost',
-    'port': '5432',
-}
+shop_api = Flask(__name__, template_folder='./templates', static_folder='./static')
+TEST = False
 
-app.config['DEBUG'] = True
+shop_api.config['DEBUG'] = True
 if os.environ.get('DATABASE_URL'):
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
+    shop_api.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 else:
     if TEST:
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://%(user)s:%(pw)s@%(host)s:%(port)s/%(db)s' % TEST_POSTGRES
+        shop_api.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
     else:
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://%(user)s:%(pw)s@%(host)s:%(port)s/%(db)s' % POSTGRES
+        shop_api.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI2
 
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
-app.config['SECRET_KEY'] = 'this-is-my-secret-key'
-db.init_app(app)
+shop_api.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
+shop_api.config['SECRET_KEY'] = os.environ['SECRET_KEY']
+db = SQLAlchemy(shop_api)
+db.init_app(shop_api)
 
 from app import views
