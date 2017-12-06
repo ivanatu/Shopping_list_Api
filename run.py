@@ -1,4 +1,4 @@
-from app import app
+from app import shop_api
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    shop_api.run(debug=False)
