@@ -1,25 +1,22 @@
-import json
-
 from flask import Flask, request, jsonify, render_template, session
 from app.models import Item, Shopping_list, User, db
-from app import app
-
-import os
+from app import shop_api
 from werkzeug.security import generate_password_hash, check_password_hash
 
-@app.route('/', methods=['GET'])
+@shop_api.route('/', methods=['GET'])
 def index():
     """
     This endpoint will return the API documentation
-    :return:
+
     """
     return render_template('index.html')
 
 
-@app.route('/auth/register', methods=['POST'])
+@shop_api.route('/auth/register', methods=['POST'])
 def register():
 	"""
-	This endpoint will create a user account
+	This endpoint will create a user account with the first name, lastname ,
+	 username and password
 	:return: json response
 	"""
 	data = request.json
@@ -34,7 +31,7 @@ def register():
 				        password=generate_password_hash(data['password']))
 			db.session.add(user)
 			db.session.commit()
-			app.logger.debug("created user %s " % user)
+			shop_api.logger.debug("created user %s " % user)
 			return jsonify({'username': user.username,
 							'status': 'pass',
 							'message': 'user account created successfully'}), 201
@@ -42,7 +39,7 @@ def register():
 	return jsonify({'status': 'fail', 'message': 'bad or missing parameters in request'}), 400
 
 
-@app.route('/auth/login', methods=['POST'])
+@shop_api.route('/auth/login', methods=['POST'])
 def login():
 	"""
 	This endpoint will login a user with an account
@@ -68,7 +65,7 @@ def login():
 	return jsonify({'status': 'fail', 'message': 'bad or missing parameters in request'}), 400
 
 
-@app.route('/auth/logout', methods=['GET'])
+@shop_api.route('/auth/logout', methods=['GET'])
 def logout():
 	"""
 	This endpoint will logout a user
@@ -85,7 +82,7 @@ def logout():
 	return jsonify({'status': 'fail',"message": " cant access to login"}), 401
 
 
-@app.route('/auth/reset-password', methods=['POST'])
+@shop_api.route('/auth/reset-password', methods=['POST'])
 def reset_password():
 	"""
 	This endpoint will reset a password for a given user logged in at the front end
@@ -112,7 +109,7 @@ def reset_password():
 	return jsonify({'status': 'fail',"message": " cant access to login"}), 401
 
 
-@app.route('/shoppinglists', methods=['POST'])
+@shop_api.route('/shoppinglists', methods=['POST'])
 def add_a_list():
 	"""
 	This endpoint will create a shopping list for a logged in user
@@ -139,7 +136,7 @@ def add_a_list():
 	return jsonify({'status': 'fail',"message": " cant access to login"}), 401
 
 
-@app.route('/shoppinglists', methods=['GET'])
+@shop_api.route('/shoppinglists', methods=['GET'])
 def view_all_lists():
 	"""
 	This endpoint will return all the lists for a logged in user and if the q parameter is provided, it will implement
@@ -153,8 +150,8 @@ def view_all_lists():
 			results = []
 			# query parameters
 			q = request.args.get('q', None)  # this parameter contains the name of the list
-			limit = request.args.get('limit', 50, type=int)  # limits the number of records to 50 per page (optional)
-			page = request.args.get('page', 1, type=int)  # page one is default, but page can be passed as an argument (optional)
+			limit = request.args.get('limit', 50, type=int)  # limits the number of records to 50 per page
+			page = request.args.get('page', 1, type=int)  # page one is default, but page can be passed as an argument
 			if q is not None:
 				lists = Shopping_list.query.filter(Shopping_list.list.like("%"+q.strip()+"%")).\
                     filter_by(user_id=user_id).paginate(page, limit, False).items
@@ -176,7 +173,7 @@ def view_all_lists():
 	return jsonify({'status': 'fail',"message": " cant access to login"}), 401
 
 
-@app.route('/shoppinglists/<int:id>', methods=['GET'])
+@shop_api.route('/shoppinglists/<int:id>', methods=['GET'])
 def get_a_list(id):
 	"""
 	This endpoint will return a list of a given list_id
@@ -199,7 +196,7 @@ def get_a_list(id):
 	return jsonify({'status': 'fail',"message": " cant access to login"}), 401
 
 
-@app.route('/shoppinglists/<int:id>', methods=['PUT'])
+@shop_api.route('/shoppinglists/<int:id>', methods=['PUT'])
 def update_a_list(id):
 	"""
 	This endpoint will update a list of with a given id
@@ -224,7 +221,7 @@ def update_a_list(id):
 	return jsonify({'status': 'fail',"message": " cant access to login"}), 401
 
 
-@app.route('/shoppinglists/<int:id>', methods=['DELETE'])
+@shop_api.route('/shoppinglists/<int:id>', methods=['DELETE'])
 def delete_a_list(id):
 	"""
 	This endpoint will delete a list with a given id
@@ -245,7 +242,7 @@ def delete_a_list(id):
 
 # -------------------------------------------------------------------------------------------------
 
-@app.route('/shoppinglists/<int:id>/items', methods=['POST'])
+@shop_api.route('/shoppinglists/<int:id>/items', methods=['POST'])
 def add_items_list(id):
 	"""
 	This endpoint will add items to a given list
@@ -271,7 +268,7 @@ def add_items_list(id):
 		return jsonify({'status': 'fail', "message": "Error with your login, please try again"}), 401
 	return jsonify({'status': 'fail',"message": " cant access to login"}), 401
 
-@app.route('/shoppinglists/<int:id>/items', methods=['GET'])
+@shop_api.route('/shoppinglists/<int:id>/items', methods=['GET'])
 def get_items_list(id):
     auth_header = request.headers.get('Authorization')
     if auth_header:
@@ -308,7 +305,7 @@ def get_items_list(id):
     return jsonify({'status': 'fail',"message": " cant access to login"}), 401
 
 
-@app.route('/shoppinglists/<int:list_id>/items/<int:item_id>', methods=['PUT'])
+@shop_api.route('/shoppinglists/<int:list_id>/items/<int:item_id>', methods=['PUT'])
 def update_list_item(list_id, item_id):
 	"""
 	This endpoint will update a given item on a given list
@@ -335,7 +332,7 @@ def update_list_item(list_id, item_id):
 		return jsonify({'status': 'fail', "message": "Error with your login, please try again"}), 401
 	return jsonify({'status': 'fail',"message": " cant access to login"}), 401
 
-@app.route('/shoppinglists/<int:list_id>/items/<int:item_id>', methods=['DELETE'])
+@shop_api.route('/shoppinglists/<int:list_id>/items/<int:item_id>', methods=['DELETE'])
 def delete_item_from_list(list_id, item_id):
 	"""
 	This endpoint will delete an item on given list
