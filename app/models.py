@@ -1,11 +1,7 @@
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timedelta
-#from app import db
-
+from app import db, shop_api
 import jwt
 
-db = SQLAlchemy()
 class User(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
@@ -21,7 +17,6 @@ class User(db.Model):
         self.password = password
 
     def generate_auth_token(self, expiration=100):
-        from app.views import app
         try:
             payload = {
                 'exp': datetime.utcnow() + timedelta(minutes=expiration),
@@ -31,7 +26,7 @@ class User(db.Model):
             # create the byte string token using the payload and the SECRET key
             jwt_string = jwt.encode(
                 payload,
-                app.config.get('SECRET_KEY'),
+                shop_api.config.get('SECRET_KEY'),
                 algorithm='HS256'
             )
             return jwt_string
@@ -41,10 +36,9 @@ class User(db.Model):
     @staticmethod
     def decode_token(token):
         """Decodes token from the authorization header"""
-        from app.views import app
         try:
             # try to decode the token using the secret variable
-            payload = jwt.decode(token, app.config.get('SECRET_KEY'))
+            payload = jwt.decode(token, shop_api.config.get('SECRET_KEY'))
             return payload['sub']
         except jwt.ExpiredSignatureError:
             # token has expired, return n error string
