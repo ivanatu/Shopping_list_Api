@@ -7,13 +7,13 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(80))
     last_name = db.Column(db.String(80))
-    username = db.Column(db.String(80), unique=True)
+    email = db.Column(db.String(80), unique=True)
     password = db.Column(db.String(500), unique=True)
 
-    def __init__(self, first_name, last_name, username, password):
+    def __init__(self, first_name, last_name, email, password):
         self.first_name = first_name
         self.last_name = last_name
-        self.username = username
+        self.email = email
         self.password = password
 
     def generate_auth_token(self, expiration=100):
@@ -48,7 +48,7 @@ class User(db.Model):
                      
         
     def __repr__(self):
-        return '<User %r>' % self.username
+        return '<User %r>' % self.email
 
 class Item(db.Model):
     __tablename__ = 'items'
@@ -71,6 +71,9 @@ class Shopping_list(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     list = db.Column(db.String(80), unique=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    item_rel = db.relationship("Item", backref='Shopping_list', lazy='dynamic',
+                                  cascade="delete, delete-orphan")
+
 
     def __init__(self, list, user_id):
         self.list = list
