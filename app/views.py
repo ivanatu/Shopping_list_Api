@@ -56,6 +56,8 @@ def login():
 	This endpoint will login a user with an account
 	:return: json response
 	"""
+	if not request.json:
+		return jsonify({'status': 'fail', 'message': 'form errors'}), 400
 	data = request.json
 	invalid = validate(data)
 	if invalid:
@@ -100,6 +102,8 @@ def reset_password():
 	This endpoint will reset a password for a given user logged in at the front end
 	:return: json response
 	"""
+	if not request.json:
+		return jsonify({'status': 'fail', 'message': 'form errors'}), 400
 	data = request.json
 	auth_header = request.headers.get('Authorization')
 	if auth_header:
@@ -127,6 +131,8 @@ def add_a_list():
 	"""
 	This endpoint will create a shopping list for a logged in user
 	"""
+	if not request.json:
+		return jsonify({'status': 'fail', 'message': 'form errors'}), 400
 	data = request.json
 	auth_header = request.headers.get('Authorization')
 	if auth_header:
@@ -159,6 +165,8 @@ def view_all_lists():
 	a search query based on the list name. Other parameters search as limit and page refine the results for the user of
 	the API
 	"""
+	if not request.json:
+		return jsonify({'status': 'fail', 'message': 'form errors'}), 400
 	auth_header = request.headers.get('Authorization')
 	if auth_header:
 		user_id = User.decode_token(auth_header)
@@ -194,6 +202,10 @@ def get_a_list(id):
 	"""
 	This endpoint will return a list of a given list_id
 	"""
+
+
+	if not request.json:
+		return jsonify({'status': 'fail', 'message': 'form errors'}), 400
 	auth_header = request.headers.get('Authorization')
 	if auth_header:
 		user_id = User.decode_token(auth_header)
@@ -217,6 +229,8 @@ def update_a_list(id):
 	"""
 	This endpoint will update a list of with a given id
 	"""
+	if not request.json:
+		return jsonify({'status': 'fail', 'message': 'form errors'}), 400
 	data = request.json
 	auth_header = request.headers.get('Authorization')
 	if auth_header:
@@ -245,6 +259,8 @@ def delete_a_list(id):
 	"""
 	This endpoint will delete a list with a given id
 	"""
+	if not request.json:
+		return jsonify({'status': 'fail', 'message': 'form errors'}), 400
 	auth_header = request.headers.get('Authorization')
 	if auth_header:
 		user_id = User.decode_token(auth_header)
