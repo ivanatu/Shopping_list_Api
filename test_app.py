@@ -11,8 +11,8 @@ class TestShoppingListAPI(TestCase):
     """Tests for the Shopping List API endpoints """
     test_first_name = "aturinda"
     test_last_name = "ivan"
-    test_username = "ivo"
-    test_password = "ivo"
+    test_email = "ivo@ivo.com"
+    test_password = "Baron1234"
     test_list = "clothes"
     test_name = "item"
     test_price = "5000"
@@ -25,7 +25,7 @@ class TestShoppingListAPI(TestCase):
         """This is a test user to use during the running of tests"""
         user = models.User(first_name = self.test_first_name,
                            last_name=self.test_last_name,
-                           username=self.test_username,
+                           email=self.test_email,
                            password=generate_password_hash(self.test_password))
         db.session.add(user)
         db.session.commit()
@@ -62,15 +62,15 @@ class TestShoppingListAPI(TestCase):
                 content_type='application/json',
                 data=json.dumps(
                     dict(
-                        first_name = "baron",
+                        first_name = "aturinda",
                         last_name="ivan",
-                        username = "ivo",
-                        password = "ivo")
+                        email = "ivo@ivo.com",
+                        password = "Baron1234")
                 )
             )
 
         reply = json.loads(response.data.decode())
-        self.assertEqual(reply['username'], "ivo", msg="username key fail")
+        self.assertEqual(reply['email'], "ivo@ivo.com", msg="email key fail")
         self.assertEqual(reply['status'], "pass", msg="status key fail")
         self.assertEqual(reply['message'], "user account created successfully", msg="message key fail")
 
@@ -82,15 +82,15 @@ class TestShoppingListAPI(TestCase):
                 content_type='application/json',
                 data=json.dumps(
                     dict(
-                        first_name="baron",
+                        first_name="aturinda",
                         last_name="ivan",
-                        username="ivo",
-                        password="ivo")
+                        email="ivo@ivo.com",
+                        password="Baron1234")
                 )
             )
             reply = json.loads(response.data.decode())
             self.assertEqual(reply['status'], "fail", msg="status key fail")
-            self.assertEqual(reply['message'], "user already exists", msg="message key fail")
+            self.assertEqual(reply['message'], "user email already exists", msg="message key fail")
 
 # --------------------------- /auth/login endpoint tests --------------------------------------------------------
 
@@ -99,17 +99,16 @@ class TestShoppingListAPI(TestCase):
         with self.client:
             response = self.client.post('/auth/login',
                                         content_type='application/json',
-                                        data=json.dumps(dict(username="ivo", password="igwe")))
+                                        data=json.dumps(dict(email="ivo@ivo.com", password="igwesdsdsde")))
             reply = json.loads(response.data.decode())
             self.assertEqual(reply['status'], "fail", msg="status key fail")
-            self.assertEqual(reply['message'], "wrong password or username or may be user does't exist", msg="message key fail")
 
-    def test_04_login_with_credit_credentials(self):
+    def test_04_login_with_correct_credentials(self):
         self.add_user()  # add this test user because tearDown drops all table data
         with self.client:
             response = self.client.post('/auth/login',
                                         content_type='application/json',
-                                        data=json.dumps(dict(username = "ivo", password = "ivo")))
+                                        data=json.dumps(dict(email = "ivo@ivo.com", password = "Baron1234")))
             reply = json.loads(response.data.decode())
             self.assertEqual(reply['status'], "pass", msg="status key fail")
             self.assertEqual(reply['message'], "login was successful", msg="message key fail")
@@ -122,7 +121,7 @@ class TestShoppingListAPI(TestCase):
     #         # you have to be logged in to log out
     #         self.client.post('/auth/login',
     #                          content_type='application/json',
-    #                          data=json.dumps(dict(username="ivo", password="ivo")))
+    #                          data=json.dumps(dict(email="ivo", password="ivo")))
     #
     #         response = self.client.get('/auth/logout', content_type='application/json')
     #         reply = json.loads(response.data.decode())
@@ -137,7 +136,7 @@ class TestShoppingListAPI(TestCase):
         with self.client:
             response = self.client.post('/auth/login',
                                 content_type='application/json',
-                                data=json.dumps(dict(username="ivo", password="ivo")))
+                                data=json.dumps(dict(email="ivo@ivo.com", password="Baron1234")))
 
             reply = json.loads(response.data.decode())
             headers = {'Authorization': format(reply['token'])}
@@ -145,19 +144,19 @@ class TestShoppingListAPI(TestCase):
             response = self.client.post('/auth/reset-password',
                                         content_type='application/json',
                                         headers=headers,
-                                        data=json.dumps(dict(username="ivo",
-                                                             old_password="igwe",
-                                                             new_password="this")))
+                                        data=json.dumps(dict(email="ivo@ivo.com",
+                                                             old_password="barongh",
+                                                             new_password="Baron1234")))
             reply = json.loads(response.data.decode())
             self.assertEqual(reply['status'], "fail", msg="status key fail")
-            self.assertEqual(reply['message'], "wrong username or password or may be user does\'t exist", msg="message key fail")
+            self.assertEqual(reply['message'], "wrong email or password or may be user does\'t exist", msg="message key fail")
 
     def test_07_reset_password_with_correct_credentials(self):
         self.add_user()
         with self.client:
             response = self.client.post('/auth/login',
                                 content_type='application/json',
-                                data=json.dumps(dict(username="ivo", password="ivo")))
+                                data=json.dumps(dict(email="ivo@ivo.com", password="Baron1234")))
 
             reply = json.loads(response.data.decode())
             headers = {'Authorization': format(reply['token'])}
@@ -165,9 +164,9 @@ class TestShoppingListAPI(TestCase):
             response = self.client.post('/auth/reset-password',
                                         content_type='application/json',
                                         headers=headers,
-                                        data=json.dumps(dict(username="ivo",
-                                                             old_password="ivo",
-                                                             new_password="this")))
+                                        data=json.dumps(dict(email="ivo@ivo.com",
+                                                             old_password="Baron1234",
+                                                             new_password="baronivo")))
             reply = json.loads(response.data.decode())
             self.assertEqual(reply['status'], "pass", msg="status key fail")
             self.assertEqual(reply['message'], "password was changed successfully", msg="message key fail")
@@ -180,7 +179,7 @@ class TestShoppingListAPI(TestCase):
             # you have to be logged in to create a list
             response = self.client.post('/auth/login',
                                         content_type='application/json',
-                                        data=json.dumps(dict(username="ivo", password="ivo")))
+                                        data=json.dumps(dict(email="ivo@ivo.com", password="Baron1234")))
 
             reply = json.loads(response.data.decode())
             headers = {'Authorization': format(reply['token'])}
@@ -201,7 +200,7 @@ class TestShoppingListAPI(TestCase):
             # you have to be logged in to create a list
             response = self.client.post('/auth/login',
                                         content_type='application/json',
-                                        data=json.dumps(dict(username="ivo", password="ivo")))
+                                        data=json.dumps(dict(email="ivo@ivo.com", password="Baron1234")))
 
             reply = json.loads(response.data.decode())
             headers = {'Authorization': format(reply['token'])}
@@ -209,10 +208,9 @@ class TestShoppingListAPI(TestCase):
             response = self.client.post('/shoppinglists',
                                         content_type='application/json',
                                         headers=headers,
-                                        data=json.dumps(dict()))
+                                        data=json.dumps(dict(list="")))
             reply = json.loads(response.data.decode())
             self.assertEqual(reply['status'], "fail", msg="status key fail")
-            self.assertEqual(reply['message'], "list is missing in the data", msg="message key fail")
 
     def test_10_view_lists(self):
         self.add_user()  # add this test user because tearDown drops all table data
@@ -220,7 +218,7 @@ class TestShoppingListAPI(TestCase):
         with self.client:
             # you have to be logged in to view a list
             response = self.client.post('/auth/login', content_type='application/json',
-                                        data=json.dumps(dict(username="ivo", password="ivo")))
+                                        data=json.dumps(dict(email="ivo@ivo.com", password="Baron1234")))
 
             reply = json.loads(response.data.decode())
             headers = {'Authorization': format(reply['token'])}
@@ -237,7 +235,7 @@ class TestShoppingListAPI(TestCase):
         with self.client:
             # you have to be logged in to view a list
             response = self.client.post('/auth/login', content_type='application/json',
-                                        data=json.dumps(dict(username="ivo", password="ivo")))
+                                        data=json.dumps(dict(email="ivo@ivo.com", password="Baron1234")))
             reply = json.loads(response.data.decode())
             headers = {'Authorization': format(reply['token'])}
 
@@ -253,7 +251,7 @@ class TestShoppingListAPI(TestCase):
         with self.client:
             # you have to be logged in to view a list
             response = self.client.post('/auth/login', content_type='application/json',
-                                        data=json.dumps(dict(username="ivo", password="ivo")))
+                                        data=json.dumps(dict(email="ivo@ivo.com", password="Baron1234")))
 
             reply = json.loads(response.data.decode())
             headers = {'Authorization': format(reply['token'])}
@@ -270,7 +268,7 @@ class TestShoppingListAPI(TestCase):
         with self.client:
             # you have to be logged in to view a list
             response = self.client.post('/auth/login', content_type='application/json',
-                                        data=json.dumps(dict(username="ivo", password="ivo")))
+                                        data=json.dumps(dict(email="ivo@ivo.com", password="Baron1234")))
             reply = json.loads(response.data.decode())
             headers = {'Authorization': format(reply['token'])}
 
@@ -288,7 +286,7 @@ class TestShoppingListAPI(TestCase):
         with self.client:
             # you have to be logged in to view a list
             response = self.client.post('/auth/login', content_type='application/json',
-                                        data=json.dumps(dict(username="ivo", password="ivo")))
+                                        data=json.dumps(dict(email="ivo@ivo.com", password="Baron1234")))
             reply = json.loads(response.data.decode())
             headers = {'Authorization': format(reply['token'])}
 
@@ -297,14 +295,14 @@ class TestShoppingListAPI(TestCase):
                                        data=json.dumps(dict(list="cups")))
             reply = json.loads(response.data.decode())
             self.assertEqual(reply['status'], "fail", msg="status key fail")
-            self.assertEqual(reply['message'], "list not updated", msg="message key fail")
+            self.assertEqual(reply['message'], "list doesnot exist", msg="message key fail")
 
     def test_15_delete_an_existing_list(self):
         self.add_user()
         self.add_list()
         with self.client:
             response = self.client.post('/auth/login', content_type='application/json',
-                                        data=json.dumps(dict(username="ivo", password="ivo")))
+                                        data=json.dumps(dict(email="ivo@ivo.com", password="Baron1234")))
             reply = json.loads(response.data.decode())
             headers = {'Authorization': format(reply['token'])}
 
@@ -318,7 +316,7 @@ class TestShoppingListAPI(TestCase):
         self.add_user()
         with self.client:
             response = self.client.post('/auth/login', content_type='application/json',
-                                        data=json.dumps(dict(username="ivo", password="ivo")))
+                                        data=json.dumps(dict(email="ivo@ivo.com", password="Baron1234")))
             reply = json.loads(response.data.decode())
             headers = {'Authorization': format(reply['token'])}
 
@@ -337,7 +335,7 @@ class TestShoppingListAPI(TestCase):
             # you have to be logged in to create a list
             response = self.client.post('/auth/login',
                                         content_type='application/json',
-                                        data=json.dumps(dict(username="ivo", password="ivo")))
+                                        data=json.dumps(dict(email="ivo@ivo.com", password="Baron1234")))
 
             reply = json.loads(response.data.decode())
             headers = {'Authorization': format(reply['token'])}
@@ -358,7 +356,7 @@ class TestShoppingListAPI(TestCase):
             # you have to be logged in to create a list
             response = self.client.post('/auth/login',
                                         content_type='application/json',
-                                        data=json.dumps(dict(username="ivo", password="ivo")))
+                                        data=json.dumps(dict(email="ivo@ivo.com", password="Baron1234")))
 
             reply = json.loads(response.data.decode())
             headers = {'Authorization': format(reply['token'])}
@@ -378,7 +376,7 @@ class TestShoppingListAPI(TestCase):
         self.add_item()
         with self.client:
             response = self.client.post('/auth/login', content_type='application/json',
-                                        data=json.dumps(dict(username="ivo", password="ivo")))
+                                        data=json.dumps(dict(email="ivo@ivo.com", password="Baron1234")))
             reply = json.loads(response.data.decode())
             headers = {'Authorization': format(reply['token'])}
             response = self.client.get('/shoppinglists/1/items', content_type='application/json',
@@ -391,7 +389,7 @@ class TestShoppingListAPI(TestCase):
         self.add_list()
         with self.client:
             response = self.client.post('/auth/login', content_type='application/json',
-                                        data=json.dumps(dict(username="ivo", password="ivo")))
+                                        data=json.dumps(dict(email="ivo@ivo.com", password="Baron1234")))
             reply = json.loads(response.data.decode())
             headers = {'Authorization': format(reply['token'])}
             response = self.client.get('/shoppinglists/1/items', content_type='application/json',
@@ -406,7 +404,7 @@ class TestShoppingListAPI(TestCase):
         with self.client:
             # you have to be logged in to view a list
             response = self.client.post('/auth/login', content_type='application/json',
-                                        data=json.dumps(dict(username="ivo", password="ivo")))
+                                        data=json.dumps(dict(email="ivo@ivo.com", password="Baron1234")))
             reply = json.loads(response.data.decode())
             headers = {'Authorization': format(reply['token'])}
 
@@ -424,7 +422,7 @@ class TestShoppingListAPI(TestCase):
         with self.client:
             # you have to be logged in to view a list
             response = self.client.post('/auth/login', content_type='application/json',
-                                        data=json.dumps(dict(username="ivo", password="ivo")))
+                                        data=json.dumps(dict(email="ivo@ivo.com", password="Baron1234")))
             reply = json.loads(response.data.decode())
             headers = {'Authorization': format(reply['token'])}
 
@@ -442,7 +440,7 @@ class TestShoppingListAPI(TestCase):
         with self.client:
             # you have to be logged in to view a list
             response = self.client.post('/auth/login', content_type='application/json',
-                                        data=json.dumps(dict(username="ivo", password="ivo")))
+                                        data=json.dumps(dict(email="ivo@ivo.com", password="Baron1234")))
             reply = json.loads(response.data.decode())
             headers = {'Authorization': format(reply['token'])}
 
@@ -460,7 +458,7 @@ class TestShoppingListAPI(TestCase):
         with self.client:
             # you have to be logged in to view a list
             response = self.client.post('/auth/login', content_type='application/json',
-                                        data=json.dumps(dict(username="ivo", password="ivo")))
+                                        data=json.dumps(dict(email="ivo@ivo.com", password="Baron1234")))
             reply = json.loads(response.data.decode())
             headers = {'Authorization': format(reply['token'])}
 
@@ -476,7 +474,7 @@ class TestShoppingListAPI(TestCase):
         with self.client:
             # you have to be logged in to view a list
             response = self.client.post('/auth/login', content_type='application/json',
-                                        data=json.dumps(dict(username="ivo", password="ivo")))
+                                        data=json.dumps(dict(email="ivo@ivo.com", password="Baron1234")))
             reply = json.loads(response.data.decode())
             headers = {'Authorization': format(reply['token'])}
 
@@ -494,7 +492,7 @@ class TestShoppingListAPI(TestCase):
         with self.client:
             # you have to be logged in to view a list
             response = self.client.post('/auth/login', content_type='application/json',
-                                        data=json.dumps(dict(username="ivo", password="ivo")))
+                                        data=json.dumps(dict(email="ivo@ivo.com", password="Baron1234")))
             reply = json.loads(response.data.decode())
             headers = {'Authorization': format(reply['token'])}
 
@@ -527,6 +525,49 @@ class TestShoppingListAPI(TestCase):
             reply = json.loads(response.data.decode())
             #self.assertEqual(reply['status'], "fail", msg="status key fail")
             self.assertTrue(reply['message'],  msg="message key fail")
+
+    def test_30_input_with_incorrect_characters(self):
+        with self.client:
+            response = self.client.post(
+                'auth/register',
+                content_type='application/json',
+                data=json.dumps(
+                    dict(
+                        first_name="123aw",
+                        last_name="dsvws90",
+                        email="ivo@ivo.comn   ",
+                        password="Baron1234")
+                )
+            )
+            reply = json.loads(response.data.decode())
+            self.assertEqual(reply['status'], "fail", msg="status key fail")
+
+    def test_31_add_an_existing_list(self):
+        self.add_user()  # add this test user because tearDown drops all table data
+        self.add_list()
+        with self.client:
+            # you have to be logged in to create a list
+            response = self.client.post('/auth/login',
+                                        content_type='application/json',
+                                        data=json.dumps(dict(email="ivo@ivo.com", password="Baron1234")))
+
+            reply = json.loads(response.data.decode())
+            headers = {'Authorization': format(reply['token'])}
+
+            response = self.client.post('/shoppinglists',
+                                        content_type='application/json',
+                                        headers=headers,
+                                        data=json.dumps(dict(list="clothes")))
+            reply = json.loads(response.data.decode())
+            self.assertEqual(reply['status'], "fail", msg="status key fail")
+
+    def test_32_login_with_non_existing_user(self):
+        with self.client:
+            response = self.client.post('/auth/login',
+                                        content_type='application/json',
+                                        data=json.dumps(dict(email="ivo@ivo.com", password="igwelsldmfsms6787e")))
+            reply = json.loads(response.data.decode())
+            self.assertEqual(reply['error'], "user not found. please register", msg="message key fail")
 
 
 
