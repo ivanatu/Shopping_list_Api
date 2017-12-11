@@ -11,5 +11,9 @@ venv/
 *env.py
 /alembic.ini
 *_.py
-
+.env/
+.coverage
+.coverage.*
+env
+env*
 
