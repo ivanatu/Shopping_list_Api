@@ -2,8 +2,6 @@ from flask import Flask
 import os
 from flask_sqlalchemy import SQLAlchemy
 
-#from config import SQLALCHEMY_DATABASE_URI, SQLALCHEMY_DATABASE_URI2, SECRET_KEY
-
 shop_api = Flask(__name__, template_folder='./templates', static_folder='./static')
 TEST = True
 
