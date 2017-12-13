@@ -3,7 +3,7 @@ import os
 from flask_sqlalchemy import SQLAlchemy
 
 shop_api = Flask(__name__, template_folder='./templates', static_folder='./static')
-TEST = True
+TEST = False
 
 shop_api.config['DEBUG'] = True
 if os.environ.get('DATABASE_URL'):
