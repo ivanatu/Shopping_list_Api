@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify, render_template, session, make_respon
 from app.models import Item, Shopping_list, User, db
 from app import shop_api
 from werkzeug.security import generate_password_hash, check_password_hash
-from app.handlers import validate, required
+from app.handlers import validate, required, validate_json
 
 
 @shop_api.route('/', methods=['GET'])
@@ -15,6 +15,7 @@ def index():
 
 
 @shop_api.route('/auth/register', methods=['POST'])
+@validate_json
 def register():
 	"""
 	This endpoint will create a user account with the first name, lastname ,
@@ -22,10 +23,8 @@ def register():
 	:return: json response
 	"""
 
-	if not request.json:
-		return jsonify({'status':'fail', 'message':'form errors'}),400
-
 	data = request.json
+
 	require = required(data, ['first_name', 'last_name', 'email', 'password'])
 
 	if len(require) != 0:
@@ -78,24 +77,6 @@ def login():
 	return jsonify({"error": "user not found. please register"}), 401
 
 
-
-# @shop_api.route('/auth/logout', methods=['GET'])
-# def logout():
-#     """
-#     This endpoint will logout a user
-#     :return:
-#     """
-#     auth_header = request.headers.get('Authorization')
-#     if auth_header:
-#         user_id = User.decode_token(auth_header)
-#         if not isinstance(user_id, str):
-#             user = User.query.filter_by(user_id=session["user"]).first()
-#             session.pop('user', None)
-#             return jsonify({'status': 'pass', 'message': 'logout was successful'}), 200
-#         return jsonify({'status': 'fail', "message": "Error with your login, please try again"}), 401
-#     return jsonify({'status': 'fail', "message": " cant access to login"}), 401
-
-
 @shop_api.route('/auth/reset-password', methods=['POST'])
 def reset_password():
 	"""
@@ -112,7 +93,7 @@ def reset_password():
 			invalid = validate(data)
 			if invalid:
 				return make_response(jsonify({'status': 'fail', 'message': invalid}), 400)
-				# locate user and check the old password
+			# locate user and check the old password
 			user = User.query.filter_by(email=data['email']).first()
 			if user and check_password_hash(user.password, data['old_password']):
 				user.password = generate_password_hash(data['new_password'])
@@ -141,7 +122,7 @@ def add_a_list():
 			invalid = validate(data)
 			if invalid:
 				return make_response(jsonify({'status': 'fail', 'message': invalid}), 400)
-				# create a list
+			# create a list
 			a_list = Shopping_list.query.filter_by(list=data['list'], user_id=user_id).first()
 			if a_list is None:
 				the_list = Shopping_list(list=data['list'], user_id=user_id)
@@ -165,8 +146,7 @@ def view_all_lists():
 	a search query based on the list name. Other parameters search as limit and page refine the results for the user of
 	the API
 	"""
-	if not request.json:
-		return jsonify({'status': 'fail', 'message': 'form errors'}), 400
+
 	auth_header = request.headers.get('Authorization')
 	if auth_header:
 		user_id = User.decode_token(auth_header)
@@ -203,9 +183,6 @@ def get_a_list(id):
 	This endpoint will return a list of a given list_id
 	"""
 
-
-	if not request.json:
-		return jsonify({'status': 'fail', 'message': 'form errors'}), 400
 	auth_header = request.headers.get('Authorization')
 	if auth_header:
 		user_id = User.decode_token(auth_header)
@@ -259,8 +236,7 @@ def delete_a_list(id):
 	"""
 	This endpoint will delete a list with a given id
 	"""
-	if not request.json:
-		return jsonify({'status': 'fail', 'message': 'form errors'}), 400
+
 	auth_header = request.headers.get('Authorization')
 	if auth_header:
 		user_id = User.decode_token(auth_header)
