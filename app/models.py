@@ -71,7 +71,8 @@ class Shopping_list(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     list = db.Column(db.String(80), unique=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    item_rel = db.relationship("Item", backref='Shopping_list', lazy='dynamic',
+    item_rel = db.relationship("Item", backref='Shopping_list',
+                                  lazy='dynamic',
                                   cascade="delete, delete-orphan")
 
 
