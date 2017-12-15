@@ -1,5 +1,9 @@
 import re
+from functools import wraps
+from flask import request, jsonify, request
+from werkzeug.exceptions import BadRequest
 
+from app import shop_api
 
 def required(*values_required):
 	""""""
@@ -9,10 +13,16 @@ def required(*values_required):
 			message.append("{} is required".format(value))
 	return message
 
-
-# for value_key in values_required[0].keys():
-#     print(value_key)
-
+def validate_json(f):
+	@wraps(f)
+	def wrapper(*args, **kw):
+		try:
+			request.json
+		except BadRequest as e:
+			msg = "payload must be a valid json"
+			return jsonify({"error": msg}), 400
+		return f(*args, **kw)
+	return wrapper
 
 def validate(*values):
 	"""
@@ -25,6 +35,7 @@ def validate(*values):
 	specialCharacters = re.compile(r"(^[-a-zA-Z0-9_\\s]*$)")
 	# Value is value that needs to be validated
 	for value in values:
+
 		for value_key in value.keys():
 			# Check the value is not empty
 			if value[value_key] is None:
