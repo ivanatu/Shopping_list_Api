@@ -10,10 +10,10 @@ info:
   license:
     name: "Apache 2.0"
     url: "http://www.apache.org/licenses/LICENSE-2.0.html"
-host: "virtserver.swaggerhub.com"
-basePath: "/ivanatu/shopping_list_API/1.0.0"
+host: "shopping-listapi.herokuapp.com"
+basePath: "/"
 tags:
-- name: "user"
+- name: "User"
   description: "Operations about user"
 - name: "Shopping_List"
   description: "Everything about your ShoppingLists"
@@ -26,7 +26,7 @@ paths:
   /auth/register:
     post:
       tags:
-      - "user"
+      - "User"
       summary: "Create new user"
       description: "Registers a user to the system."
       produces:
@@ -49,7 +49,7 @@ paths:
   /auth/login:
     post:
       tags:
-      - "user"
+      - "User"
       summary: "Logs user into the system"
       operationId: "loginUser"
       produces:
@@ -70,7 +70,7 @@ paths:
   /auth/logout:
     post:
       tags:
-      - "user"
+      - "User"
       summary: "Logs out current logged in user session"
       operationId: "logoutUser"
       produces:
@@ -83,7 +83,7 @@ paths:
   /auth/reset-password:
     post:
       tags:
-      - "user"
+      - "User"
       summary: "resets the password of a logged in user"
       operationId: "reset_password"
       produces:
@@ -356,9 +356,6 @@ definitions:
   User:
     type: "object"
     properties:
-      id:
-        type: "integer"
-        format: "int64"
       first_Name:
         type: "string"
         example: "Aturinda"
