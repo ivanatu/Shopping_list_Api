@@ -61,9 +61,13 @@ def validate(*values):
 
 			# Use regex to validate email
 			if value_key == "email":
-				email_regex = re.compile(r"(^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-z]+$)")
+				email_regex = re.compile(
+                    r"(^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-z]+$)")
 				if not email_regex.match(value[value_key]):
-					message.append("Your " + value_key + " is not valid. Example: shopping@gmail.com")
+					message.append("Your " +
+                                   value_key +
+                                   " is not valid. "
+                                     "Example: shopping@gmail.com")
 
 			# Use regex to validate question
 			if value_key == "first_name" or value_key == "last_name":
@@ -85,7 +89,8 @@ def validate(*values):
 					return message
 				if len(value[value_key]) < min_length:
 					message.append("Your " + value_key +
-								   " is too weak, minimum length is 8 characters")
+								   " is too weak, minimum "
+                                   "length is 8 characters")
 				pass_word = re.compile(r"^[a-z]+$")
 				if pass_word.match(value[value_key]):
 					# message.append("Your " + value_key +
@@ -94,7 +99,8 @@ def validate(*values):
 					if pass_word.match(value[value_key]):
 						message.append("STRONG PASSWORD")
 					message.append("Your " + value_key +
-								   " is too weak, must contain capitals OR numbers")
+								   " is too weak, must contain "
+                                   "capitals OR numbers")
 
 	# Return an array that contains all the error messages else false
 	if message == []:
