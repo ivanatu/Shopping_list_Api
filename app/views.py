@@ -361,8 +361,8 @@ def add_items_list(id):
 				return make_response(jsonify({'status': 'fail',
 											  'message': invalid
 											  }), 400)
-				the_list = Shopping_list.query.filter_by(
-					id=id, user_id=user_id).first()
+			the_list = Shopping_list.query.filter_by(
+				id=id, user_id=user_id).first()
 			if the_list is not None:
 				# if 'name' in data and 'price' in data:
 				# add an item to the list
