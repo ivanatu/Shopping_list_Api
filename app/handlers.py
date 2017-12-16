@@ -32,7 +32,7 @@ def validate(*values):
 
 	min_length = 8
 	message = []
-	specialCharacters = re.compile(r"(^[-a-zA-Z0-9_\\s]*$)")
+
 	# Value is value that needs to be validated
 	for value in values:
 
@@ -47,10 +47,6 @@ def validate(*values):
 				message.append("Your " + value_key + " is not string")
 				return message
 
-
-			# if value_key.match(specialCharacters):
-			# 	message.append("Your " + value_key + " is not json")
-
 			if len(value[value_key].strip()) == 0:
 				message.append("Your " + value_key + " is empty")
 
@@ -59,15 +55,20 @@ def validate(*values):
 			if value[value_key].isdigit():
 				message.append(value_key.title() + " can't be numbers only")
 
+            # Check the price is numbers only
+			if value_key == "price":
+				if value[value_key].isnotdigit():
+					message.append(value_key.title() + "has to be numbers only")
+
 			# Use regex to validate email
 			if value_key == "email":
 				email_regex = re.compile(
-                    r"(^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-z]+$)")
+					r"(^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-z]+$)")
 				if not email_regex.match(value[value_key]):
 					message.append("Your " +
-                                   value_key +
-                                   " is not valid. "
-                                     "Example: shopping@gmail.com")
+								   value_key +
+								   " is not valid. "
+									 "Example: shopping@gmail.com")
 
 			# Use regex to validate question
 			if value_key == "first_name" or value_key == "last_name":
@@ -90,7 +91,7 @@ def validate(*values):
 				if len(value[value_key]) < min_length:
 					message.append("Your " + value_key +
 								   " is too weak, minimum "
-                                   "length is 8 characters")
+								   "length is 8 characters")
 				pass_word = re.compile(r"^[a-z]+$")
 				if pass_word.match(value[value_key]):
 					# message.append("Your " + value_key +
@@ -100,7 +101,7 @@ def validate(*values):
 						message.append("STRONG PASSWORD")
 					message.append("Your " + value_key +
 								   " is too weak, must contain "
-                                   "capitals OR numbers")
+								   "capitals OR numbers")
 
 	# Return an array that contains all the error messages else false
 	if message == []:
