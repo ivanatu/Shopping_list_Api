@@ -20,4 +20,4 @@ after_success:
   - coveralls
 
 env:
-  - db='tests' USER='postgres' PASSWORD='1234' HOST='localhost' PORT=5432 SECRET_KEY='this-is-my--secret--key'
+  - db='tests' USER='postgres' PASSWORD='1234' HOST='localhost' PORT=5432 SECRET_KEY='this-is-my--secret--key' SQLALCHEMY_DATABASE_URI='postgresql://ivan2:1234@localhost:5432/shopping_list' SQLALCHEMY_DATABASE_URI2='postgresql://postgres:1234@localhost:5432/tests'
