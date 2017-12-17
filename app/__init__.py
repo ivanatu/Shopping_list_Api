@@ -3,14 +3,14 @@ import os
 from flask_sqlalchemy import SQLAlchemy
 
 shop_api = Flask(__name__, template_folder='./templates', static_folder='./static')
-TEST = False
+TEST = True
 
 shop_api.config['DEBUG'] = True
 if os.environ.get('DATABASE_URL'):
     shop_api.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 else:
     if TEST:
-        shop_api.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI2']
+        shop_api.config['SQLALCHEMY_DATABASE_URI2'] = os.environ['SQLALCHEMY_DATABASE_URI2']
     else:
         shop_api.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']
 
