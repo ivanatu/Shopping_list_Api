@@ -52,13 +52,13 @@ def validate(*values):
 
 
 			# Check the value can not be numbers only
-			if value[value_key].isdigit():
+			if value[value_key].isdigit() and value_key != "price":
 				message.append(value_key.title() + " can't be numbers only")
 
             # Check the price is numbers only
 			if value_key == "price":
-				if value[value_key].isnotdigit():
-					message.append(value_key.title() + "has to be numbers only")
+				if not value[value_key].isdigit():
+					message.append(value_key.title() + " has to be numbers only")
 
 			# Use regex to validate email
 			if value_key == "email":
