@@ -8,7 +8,6 @@ class TestAuthTestcase(BaseTests):
         """
         Testing registering a new user.
         """
-
         with self.client:
             response = self.client.post(
                 'auth/register',
