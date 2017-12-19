@@ -17,7 +17,6 @@ class TestShoppingListAPI(TestCase):
     test_name = "item"
     test_price = "5000"
 
-
     def create_app(self):
         return shop_api
 
