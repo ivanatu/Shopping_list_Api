@@ -1,5 +1,5 @@
 import json
-from .test_app import BaseTests
+from app.tests.test_app import BaseTests
 
 
 class TestItemsTestCase(BaseTests):

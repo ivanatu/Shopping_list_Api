@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from app import db, shop_api
 import jwt
 
+
 class User(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
@@ -17,6 +18,10 @@ class User(db.Model):
         self.password = password
 
     def generate_auth_token(self, expiration=100):
+        """
+        Generating token for authorization
+        """
+
         try:
             payload = {
                 'exp': datetime.utcnow() + timedelta(minutes=expiration),
@@ -54,7 +59,7 @@ class Item(db.Model):
     __tablename__ = 'items'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True)
-    price = db.Column(db.Integer)
+    price = db.Column(db.Float)
     List_id = db.Column(db.Integer, db.ForeignKey('shopping_lists.id'))
 
     def __init__(self, name, price, List_id):
@@ -74,7 +79,6 @@ class Shopping_list(db.Model):
     item_rel = db.relationship("Item", backref='Shopping_list',
                                   lazy='dynamic',
                                   cascade="delete, delete-orphan")
-
 
     def __init__(self, list, user_id):
         self.list = list
