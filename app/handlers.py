@@ -5,6 +5,7 @@ from werkzeug.exceptions import BadRequest
 
 from app import shop_api
 
+
 def required(*values_required):
     """"""
     message = []
@@ -13,6 +14,7 @@ def required(*values_required):
             message.append("{} is required".format(value))
 
     return message
+
 
 def validate_json(f):
     @wraps(f)
@@ -23,7 +25,9 @@ def validate_json(f):
             msg = "payload must be a valid json"
             return jsonify({"error": msg}), 400
         return f(*args, **kw)
+
     return wrapper
+
 
 def validate(*values):
     """
@@ -43,20 +47,18 @@ def validate(*values):
                 message.append(value_key.title() + " is required")
                 return message
 
-
-            if not isinstance(value[value_key], str) :
+            if not isinstance(value[value_key], str):
                 message.append("Your " + value_key + " is not string")
                 return message
 
             if len(value[value_key].strip()) == 0:
                 message.append("Your " + value_key + " is empty")
 
-
             # Check the value can not be numbers only
             if value[value_key].isdigit() and value_key != "price":
                 message.append(value_key.title() + " can't be numbers only")
 
-           # Check the price is numbers only
+            # Check the price is numbers only
             if value_key == "price":
                 if re.search("[^0-9.]", value[value_key]):
                     message.append(value_key.title() + " has to be numbers only")
@@ -69,7 +71,7 @@ def validate(*values):
                     message.append("Your " +
                                    value_key +
                                    " is not valid. "
-                                     "Example: shopping@gmail.com")
+                                   "Example: shopping@gmail.com")
 
             # Use regex to validate question
             if value_key == "first_name" or value_key == "last_name":
