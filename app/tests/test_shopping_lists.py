@@ -4,7 +4,6 @@ from app.tests.test_app import BaseTests
 
 class TestShoppingListTestCase(BaseTests):
 
-
     def test_create_list(self):
         """
         This tests whether a shopping list has been created successfully
@@ -216,7 +215,7 @@ class TestShoppingListTestCase(BaseTests):
 
             response = self.client.delete('/shoppinglists/1',
                                           content_type='application/json',
-                                       headers=headers)
+                                          headers=headers)
             reply = json.loads(response.data.decode())
             self.assertEqual(reply['status'], "pass",
                              msg="message key fail")
@@ -240,7 +239,7 @@ class TestShoppingListTestCase(BaseTests):
 
             response = self.client.delete('/shoppinglists/1',
                                           content_type='application/json',
-                                       headers=headers)
+                                          headers=headers)
             reply = json.loads(response.data.decode())
             self.assertEqual(reply['status'], "fail", msg="message key fail")
             self.assertEqual(reply['message'], "list not deleted",
