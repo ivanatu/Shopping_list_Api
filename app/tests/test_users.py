@@ -14,20 +14,20 @@ class TestAuthTestcase(BaseTests):
                 content_type='application/json',
                 data=json.dumps(
                     dict(
-                        first_name = "aturinda",
+                        first_name="aturinda",
                         last_name="ivan",
-                        email = "ivo@ivo.com",
-                        password = "Baron1234")
+                        email="ivo@ivo.com",
+                        password="Baron1234")
                 )
             )
 
         reply = json.loads(response.data.decode())
         self.assertEqual(reply['email'], "ivo@ivo.com",
-                                        msg="email key fail")
+                         msg="email key fail")
         self.assertEqual(reply['status'], "pass",
-                                        msg="status key fail")
+                         msg="status key fail")
         self.assertEqual(reply['message'], "user account created successfully",
-                                        msg="message key fail")
+                         msg="message key fail")
 
     def test_register_an_existing_account(self):
         """
@@ -79,8 +79,8 @@ class TestAuthTestcase(BaseTests):
             response = self.client.post('/auth/login',
                                         content_type='application/json',
                                         data=json.dumps(dict(
-                                            email = "ivo@ivo.com",
-                                            password = "Baron1234")))
+                                            email="ivo@ivo.com",
+                                            password="Baron1234")))
             reply = json.loads(response.data.decode())
             self.assertEqual(reply['status'], "pass",
                              msg="status key fail")
@@ -110,10 +110,10 @@ class TestAuthTestcase(BaseTests):
         self.add_user()
         with self.client:
             response = self.client.post('/auth/login',
-                                content_type='application/json',
-                                data=json.dumps(dict(
-                                    email="ivo@ivo.com",
-                                    password="Baron1234")))
+                                        content_type='application/json',
+                                        data=json.dumps(dict(
+                                            email="ivo@ivo.com",
+                                            password="Baron1234")))
 
             reply = json.loads(response.data.decode())
             headers = {'Authorization': format(reply['token'])}
@@ -123,8 +123,8 @@ class TestAuthTestcase(BaseTests):
                                         headers=headers,
                                         data=json.dumps(
                                             dict(email="ivo@ivo.com",
-                                                old_password="barongh",
-                                                new_password="Baron1234")))
+                                                 old_password="barongh",
+                                                 new_password="Baron1234")))
             reply = json.loads(response.data.decode())
             self.assertEqual(reply['status'], "fail",
                              msg="status key fail")
@@ -140,10 +140,10 @@ class TestAuthTestcase(BaseTests):
         self.add_user()
         with self.client:
             response = self.client.post('/auth/login',
-                                content_type='application/json',
-                                data=json.dumps(dict(
-                                    email="ivo@ivo.com",
-                                    password="Baron1234")))
+                                        content_type='application/json',
+                                        data=json.dumps(dict(
+                                            email="ivo@ivo.com",
+                                            password="Baron1234")))
 
             reply = json.loads(response.data.decode())
             headers = {'Authorization': format(reply['token'])}
@@ -153,7 +153,7 @@ class TestAuthTestcase(BaseTests):
                                         headers=headers,
                                         data=json.dumps(
                                             dict(email="ivo@ivo.com",
-                                                old_password="Baron1234",
+                                                 old_password="Baron1234",
                                                  new_password="baronivo")))
             reply = json.loads(response.data.decode())
             self.assertEqual(reply['status'], "pass",
@@ -210,4 +210,3 @@ class TestAuthTestcase(BaseTests):
             )
             reply = json.loads(response.data.decode())
             self.assertEqual(reply['status'], "fail", msg="status key fail")
-
