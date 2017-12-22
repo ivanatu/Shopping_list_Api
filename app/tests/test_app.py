@@ -11,7 +11,7 @@ class BaseTests(TestCase):
     test_email = "ivo@ivo.com"
     test_password = "Baron1234"
     test_list = "clothes"
-    test_name = "item"
+    test_name = "irish"
     test_price = "5000"
 
     def create_app(self):
@@ -19,7 +19,7 @@ class BaseTests(TestCase):
 
     def add_user(self):
         """This is a test user to use during the running of tests"""
-        user = models.User(first_name = self.test_first_name,
+        user = models.User(first_name=self.test_first_name,
                            last_name=self.test_last_name,
                            email=self.test_email,
                            password=generate_password_hash(
@@ -49,21 +49,3 @@ class BaseTests(TestCase):
     def tearDown(self):
         db.session.remove()
         db.drop_all()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
