@@ -127,7 +127,6 @@ class TestItemsTestCase(BaseTests):
                                        data=json.dumps(dict(name="item",
                                                             price="5000")))
             reply = json.loads(response.data.decode())
-            self.assertTrue(reply['item'], msg="item key fail")
             self.assertEqual(reply['status'], "pass", msg="status key fail")
             self.assertEqual(reply['message'], "item updated",
                              msg="message key fail")
@@ -157,7 +156,7 @@ class TestItemsTestCase(BaseTests):
                                                             price="5000")))
             reply = json.loads(response.data.decode())
             self.assertEqual(reply['status'], "fail", msg="status key fail")
-            self.assertEqual(reply['message'], "item not updated",
+            self.assertEqual(reply['message'], "item does not exist",
                              msg="message key fail")
 
     def test_update_an_item_on_an_non_existing_list(self):
@@ -210,7 +209,7 @@ class TestItemsTestCase(BaseTests):
 
             response = self.client.delete('/shoppinglists/1/items/1',
                                           content_type='application/json',
-                                       headers=headers)
+                                          headers=headers)
             reply = json.loads(response.data.decode())
             self.assertEqual(reply['status'], "pass", msg="status key fail")
             self.assertEqual(reply['message'], "item deleted",
