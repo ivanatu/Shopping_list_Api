@@ -298,14 +298,18 @@ def update_a_list(id):
                 id=id, user_id=user_id).first()
 
             if the_list is not None:
-                the_list.list = str(data['list']).lower()
-                db.session.commit()
-                response = jsonify({'list': dict(id=the_list.id,
-                                                 list=the_list.list
-                                                 ),
-                                    'status': 'pass',
-                                    'message': 'list updated'})
-                return response, 201
+                the_list2 = Shopping_list.query.filter_by(
+                     user_id=user_id, list=str(data['list']).lower()).first()
+                if the_list2 is None:
+                    the_list.list = str(data['list']).lower()
+                    db.session.commit()
+                    response = jsonify({'list': dict(id=the_list.id,
+                                                     list=the_list.list
+                                                     ),
+                                        'status': 'pass',
+                                        'message': 'list updated'})
+                    return response, 201
+                return jsonify({'status': 'fail', 'message': 'list exists already'})
             return jsonify({'status': 'fail',
                             'message': 'list doesnot exist'
                             }), 400
@@ -386,7 +390,7 @@ def add_items_list(id):
                                     'message': 'item added to list'
                                     }), 201
                 return jsonify({'status': 'fail',
-                        'message': 'item already exists'}),404
+                                'message': 'item already exists'}), 404
             return jsonify({'status': 'fail',
                             'message': 'list does not exist'
                             }), 404
@@ -400,6 +404,9 @@ def add_items_list(id):
 
 @shop_api.route('/shoppinglists/<int:id>/items', methods=['GET'])
 def get_items_list(id):
+    """
+    :this returns all the items in a given list
+    """
     auth_header = request.headers.get('Authorization')
     if auth_header:
         user_id = User.decode_token(auth_header)
@@ -467,19 +474,23 @@ def update_list_item(list_id, item_id):
                 id=list_id, user_id=user_id).first()
             if the_list is not None:
                 the_item = Item.query.filter_by(
-                    id=item_id).first()
+                    id=item_id, List_id=list_id).first()
                 if the_item is not None:
-                    the_item.name = str(data['name']).lower()
-                    the_item.price = data['price']
-                    db.session.commit()
-                    return jsonify({'item': dict(id=the_item.id,
-                                                 name=the_item.name,
-                                                 price=the_item.price),
-                                    'status': 'pass',
-                                    'message': 'item updated'
-                                    }), 201
+                    the_item2 = Item.query.filter_by(
+                         List_id=list_id, name= str(data['name']).lower()).first()
+                    if the_item2 is None:
+                        the_item.name = str(data['name']).lower()
+                        the_item.price = data['price']
+                        db.session.commit()
+                        return jsonify({'item': dict(id=the_item.id,
+                                                     name=the_item.name,
+                                                     price=the_item.price),
+                                        'status': 'pass',
+                                        'message': 'item updated'
+                                        }), 201
+                    return jsonify({'status': 'fail', 'message':'item exists'})
                 return jsonify({'status': 'fail',
-                                'message': 'item not updated'
+                                'message': 'item does not exist'
                                 }), 400
             return jsonify({'status': 'fail',
                             'message': 'list does not exist'
@@ -503,8 +514,8 @@ def delete_item_from_list(list_id, item_id):
         user_id = User.decode_token(auth_header)
         if not isinstance(user_id, str):
             the_list = Shopping_list.query.filter_by(
-                id=list_id,
-                user_id=user_id).first()
+                id=list_id
+                ).first()
             if the_list is not None:
                 the_item = Item.query.filter_by(id=item_id).first()
                 if the_item is not None:
