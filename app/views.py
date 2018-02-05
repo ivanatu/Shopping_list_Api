@@ -91,7 +91,7 @@ def login():
     return jsonify({"error": "user not found. please register"}), 401
 
 
-@shop_api.route('/auth/reset-password', methods=['POST'])
+@shop_api.route('/auth/logout', methods=['POST'])
 def logout():
     """
     This endpoint will logout a user
