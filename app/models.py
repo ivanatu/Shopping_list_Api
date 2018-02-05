@@ -10,12 +10,15 @@ class User(db.Model):
     last_name = db.Column(db.String(80))
     email = db.Column(db.String(80), unique=True)
     password = db.Column(db.String(500), unique=True)
+    token = db.Column(db.String(250))
 
     def __init__(self, first_name, last_name, email, password):
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
         self.password = password
+        self.token = ""
+
 
     def generate_auth_token(self, expiration=100):
         """
