@@ -26,7 +26,6 @@ def register():
     """
 
     data = request.json
-
     require = required(data, ['first_name', 'last_name', 'email', 'password'])
 
     if len(require) != 0:
@@ -90,6 +89,32 @@ def login():
                                    'may be user does\'t exist'
                         }), 200
     return jsonify({"error": "user not found. please register"}), 401
+
+
+@shop_api.route('/auth/reset-password', methods=['POST'])
+def logout():
+    """
+    This endpoint will logout a user
+    :return:
+    """
+    if not request.json:
+        return jsonify({'status': 'fail',
+                        'message': 'form errors'}), 400
+    auth_header = request.headers.get('Authorization')
+    if auth_header:
+        user_id = User.decode_token(auth_header)
+        if not isinstance(user_id, str):
+            user = models.User.query.filter_by(user_id=user_id).first()
+            user.token = None  # remove the token that was issued when user logged in
+            user.update()
+            return jsonify({'status': 'pass',
+                            'message': 'logout was successful'}), 200
+        return jsonify({'status': 'fail',
+                        "message": "Error with your login, please try again"
+                        }), 401
+    return jsonify({'status': 'fail',
+                    "message": " cant access to login"
+                    }), 401
 
 
 @shop_api.route('/auth/reset-password', methods=['POST'])
@@ -299,7 +324,7 @@ def update_a_list(id):
 
             if the_list is not None:
                 the_list2 = Shopping_list.query.filter_by(
-                     user_id=user_id, list=str(data['list']).lower()).first()
+                    user_id=user_id, list=str(data['list']).lower()).first()
                 if the_list2 is None:
                     the_list.list = str(data['list']).lower()
                     db.session.commit()
@@ -477,7 +502,7 @@ def update_list_item(list_id, item_id):
                     id=item_id, List_id=list_id).first()
                 if the_item is not None:
                     the_item2 = Item.query.filter_by(
-                         List_id=list_id, name= str(data['name']).lower()).first()
+                        List_id=list_id, name=str(data['name']).lower()).first()
                     if the_item2 is None:
                         the_item.name = str(data['name']).lower()
                         the_item.price = data['price']
@@ -488,7 +513,7 @@ def update_list_item(list_id, item_id):
                                         'status': 'pass',
                                         'message': 'item updated'
                                         }), 201
-                    return jsonify({'status': 'fail', 'message':'item exists'})
+                    return jsonify({'status': 'fail', 'message': 'item exists'})
                 return jsonify({'status': 'fail',
                                 'message': 'item does not exist'
                                 }), 400
@@ -515,7 +540,7 @@ def delete_item_from_list(list_id, item_id):
         if not isinstance(user_id, str):
             the_list = Shopping_list.query.filter_by(
                 id=list_id
-                ).first()
+            ).first()
             if the_list is not None:
                 the_item = Item.query.filter_by(id=item_id).first()
                 if the_item is not None:
