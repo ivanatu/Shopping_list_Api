@@ -10,7 +10,7 @@ class User(db.Model):
     last_name = db.Column(db.String(80))
     email = db.Column(db.String(80), unique=True)
     password = db.Column(db.String(500), unique=True)
-    token = db.Column(db.String(250))
+    token = db.Column(db.String(1000))
 
     def __init__(self, first_name, last_name, email, password):
         self.first_name = first_name
@@ -18,6 +18,14 @@ class User(db.Model):
         self.email = email
         self.password = password
         self.token = ""
+
+    @staticmethod
+    def update():
+        """
+        This method update a new record to the database
+        :return:
+        """
+        db.session.commit()
 
 
     def generate_auth_token(self, expiration=100):
@@ -27,7 +35,7 @@ class User(db.Model):
 
         try:
             payload = {
-                'exp': datetime.utcnow() + timedelta(minutes=expiration),
+                'exp': datetime.utcnow() + timedelta(days=expiration),
                 'iat': datetime.utcnow(),
                 'sub': self.id
             }
@@ -37,6 +45,10 @@ class User(db.Model):
                 shop_api.config.get('SECRET_KEY'),
                 algorithm='HS256'
             )
+
+            self.token = jwt_string
+
+
             return jwt_string
         except Exception as ex:
             return str(ex)
