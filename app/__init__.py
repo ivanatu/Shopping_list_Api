@@ -20,7 +20,7 @@ shop_api.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 shop_api.config['SECRET_KEY'] = os.environ['SECRET_KEY']
 db = SQLAlchemy(shop_api)
 db.init_app(shop_api)
-shop_api.config['CORS_HEADERS'] = 'Content-Type'
+# shop_api.config['CORS_HEADERS'] = 'Content-Type'
 
 
 
