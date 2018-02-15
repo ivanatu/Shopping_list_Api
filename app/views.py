@@ -78,10 +78,10 @@ def login():
     if user is not None:
         if check_password_hash(user.password, data['password']):
             # generate token here
-            token = user.generate_auth_token()
-            if token:
+            user.generate_auth_token()
+            if user.token:
                 # log message and return response to client
-                return jsonify({'token': token.decode('ascii'),
+                return jsonify({'token': user.token.decode('ascii'),
                                 'status': 'pass',
                                 'message': 'login was successful'}), 201
         return jsonify({'status': 'fail',
@@ -95,18 +95,16 @@ def login():
 def logout():
     """
     This endpoint will logout a user
-    :return:
     """
-    if not request.json:
-        return jsonify({'status': 'fail',
-                        'message': 'form errors'}), 400
+
     auth_header = request.headers.get('Authorization')
+    print(auth_header)
     if auth_header:
         user_id = User.decode_token(auth_header)
         if not isinstance(user_id, str):
-            user = models.User.query.filter_by(user_id=user_id).first()
+            user = User.query.filter_by(id=user_id).first()
             user.token = None  # remove the token that was issued when user logged in
-            user.update()
+            db.session.commit()
             return jsonify({'status': 'pass',
                             'message': 'logout was successful'}), 200
         return jsonify({'status': 'fail',
@@ -231,7 +229,7 @@ def view_all_lists():
             # this parameter contains the name of the list
             q = request.args.get(str('q').lower(), None)
             # limits the number of records to 50 per page
-            limit = request.args.get('limit', 50,
+            limit = request.args.get('limit', 8,
                                      type=int)
             # page one is default,
             # but page can be passed as an argument
@@ -242,14 +240,16 @@ def view_all_lists():
                 lists = Shopping_list.query.filter(
                     Shopping_list.list.like("%" + str(q).lower().strip() + "%")). \
                     filter_by(user_id=user_id).paginate(
-                    page, limit, False).items
+                    page, limit, False)
             else:
                 lists = Shopping_list.query.filter_by(
-                    user_id=user_id).paginate(page, limit, False).items
-            for a_list in lists:
+                    user_id=user_id).paginate(page, limit, False)
+            for a_list in lists.items:
                 result = {
                     'id': a_list.id,
                     'list': a_list.list,
+                    'per_page': lists.per_page,
+                    'total': lists.total
                 }
                 results.append(result)
             if len(results) > 0:
@@ -441,7 +441,7 @@ def get_items_list(id):
             # this parameter contains the name of the list
             q = request.args.get('q', None)
             # limits the number of records to 50 per page (optional)
-            limit = request.args.get('limit', 50,
+            limit = request.args.get('limit', 8,
                                      type=int)
             # page one is default, but page can be passed as an argument (optional)
             page = request.args.get('page', 1,
@@ -453,22 +453,26 @@ def get_items_list(id):
                     items = Item.query.filter(
                         Item.name.like("%" + q.strip() + "%")). \
                         filter_by(List_id=id).paginate(
-                        page, limit, False).items
+                        page, limit, False)
                 else:
                     items = Item.query.filter_by(
-                        List_id=id).paginate(page, limit, False).items
-                for a_items in items:
+                        List_id=id).paginate(page, limit, False)
+                for a_items in items.items:
                     result = {
                         'itemid': a_items.id,
                         'name': a_items.name,
-                        'price': a_items.price
+                        'price': a_items.price,
+                        'per_page': items.per_page,
+                        'total': items.total
+
                     }
                     results.append(result)
+
                 if len(results) > 0:
                     return jsonify({'items': results,
                                     'count': str(len(results)),
                                     'status': 'pass',
-                                    'message': 'lists found'}), 200
+                                    'message': 'items found'}), 200
                 return jsonify({'count': '0',
                                 'status': 'fail',
                                 'message': 'no items found'
