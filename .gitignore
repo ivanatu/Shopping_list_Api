@@ -1,19 +1,14 @@
 .idea
-venv/
+env/
 */.DS_Store
 **/*.pyc
 **/pycache/
 .DS_Store
-#app/migrations/versions/*
 #*.cpython-36.pyc
 .cache/v/cache/lastfailed
 .cache/*
-*env.py
-/alembic.ini
 *_.py
-.env/
 .coverage
 .coverage.*
 .env
-env*
 
